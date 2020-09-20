@@ -4,3 +4,4 @@
 ##### Team members:
 * ##### Andriy Drobot
 * ##### Nazar Zubriy
+* ##### Nastia Gerasymchuk
