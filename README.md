@@ -5,3 +5,4 @@
 * ##### Andriy Drobot
 * ##### Nazar Zubriy
 * ##### Nastia Gerasymchuk
+* ##### Olha Kovinko
