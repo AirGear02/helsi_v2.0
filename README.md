@@ -6,3 +6,4 @@
 * ##### Nazar Zubriy
 * ##### Nastia Gerasymchuk
 * ##### Olha Kovinko
+* ##### Vlad Harvasyuk
