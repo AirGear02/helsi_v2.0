@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
-
+//
 const Address = db.define('addresses', {
     id: {
         type: Sequelize.INTEGER,
