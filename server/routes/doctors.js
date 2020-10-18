@@ -10,6 +10,7 @@ router.get('/', async (req, res) => {
     const doctors = await Doctor.findAll({include: [Person, JobTiltle]});
     res.status(201).send(doctors);
 });
+
 router.post("/", async function (req, res) {         
     if(!req.body) return res.sendStatus(400);
     const personId=req.body.personId;

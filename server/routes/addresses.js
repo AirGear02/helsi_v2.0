@@ -55,8 +55,8 @@ router.put( "/:id", (req, res) =>
       }
     }).then( (result) => res.json(result) )
   );
-router.delete("/:id",(req,res)=>{
-    
+
+router.delete("/:id",(req,res)=>{  
     Address.destroy({
       where: {
         id: req.params.id

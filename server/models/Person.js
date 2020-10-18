@@ -32,10 +32,7 @@ const Person = db.define('person', {
         type: Sequelize.STRING,
         allowNull: false 
     },
-    addressId:{
-        type:Sequelize.INTEGER,
-        allowNull:false
-    },
+
     role: {
         type: Sequelize.ENUM('User', 'Admin', 'Doctor'),
     }

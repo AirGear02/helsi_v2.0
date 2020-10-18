@@ -1,59 +1,49 @@
 const express = require('express');
+
+const { Sequelize } = require('sequelize');
+
+const personCreate = require('../validation/person/personCreate');
+const personUpdate = require('../validation/person/personUpdate');
+
+const router = express.Router();
+const bcrypt = require('bcrypt');
 const Person = require('../models/Person');
 const Address = require('../models/Address');
-const { Sequelize } = require('sequelize');
-const router = express.Router();
 
-router.post("/", async function (req, res) {         
-    if(!req.body) return res.sendStatus(400);
-         
-     //const id = req.body.id;
-    const first_name = req.body.first_name;
-    const last_name=req.body.last_name;
-    const middle_name=req.body.middle_name;
-    const date_born=req.body.date_born;
-    const phone_number=req.body.phone_number;    
-    const email=req.body.email;
-    const pass=req.body.pass;
-    const role=req.body.role;
-    const addressId=req.body.addressId;
-    Person.create({ //id:id,
-                    first_name: first_name,
-                     last_name:last_name,
-                     middle_name:middle_name,
-                     date_born:date_born,
-                     phone_number:phone_number,
-                     email:email,
-                     pass:pass,
-                     role:role,
-                     addressId:addressId,
-                    }       
-                     ).then((result)=>{                    
-                      res.status(201).send(res.json(result));
-    }).catch(err=>console.log(err));
+const SALT_ROUND = 10;
+
+router.post("/", async (req, res) =>  {         
+    const value = await personCreate(req, res);
+    value.pass = await bcrypt.hash(value.pass, SALT_ROUND);
+    const person = await Person.create(value);
+    res.json(person).status(201);
 });
-router.get( "/id/:id", async function(req, res){
-    if(!req.params.id)return res.sendStatus(200);    
-    Person.findByPk(req.params.id,{include: [Address]}).then( (result) => res.json(result))
- } );
 
-router.put( "/:id", (req, res) =>
-    Person.update({
-        addressId: req.body.addressId
-    },
-    {
-      where: {
-        id: req.params.id
-      }
-    }).then( (result) => res.json(result) )
-  );
-router.delete("/:id",(req,res)=>{
-    
-    Person.destroy({
-      where: {
-        id: req.params.id
-      }
-    }).then( (result) => res.json(result) )
+
+
+router.get( "/:id", async (req, res) => {
+    const person = await Person.findByPk(req.params.id,{include: [Address]});
+    person === null ? res.json({message: `No person with id ${req.params.id}`}, 400) : res.json(person, 200);
+ });
+
+
+
+router.put( "/:id", async (req, res) => {
+    const person = await Person.findByPk(req.params.id);
+    if(person === null) res.json({message: `No person with id ${req.params.id}`}, 400);
+
+    const value = await personUpdate(req, res);
+    const newPerson = await person.update(value);
+    res.json(newPerson, 201);
+});
+
+
+router.delete("/:id", async (req,res) => {
+    const person = await Person.findByPk(req.params.id);
+    if(person === null) res.json({message: `No person with id ${req.params.id}`}, 400);
+
+    await person.destroy();
+    res.json({message: 'Successfully destroyed'}, 201);
 });
 
 router.get('/byAddressId/:id', async (req, res) => {
@@ -77,7 +67,7 @@ router.get('/byAddressId/:id', async (req, res) => {
 });
 
 router.get('/byFLM/', async function (req, res){
-  let name=req.query.filter?req.query.filter.trim():'';
+  let name=req.query.filter ? req.query.filter.trim():'';
   
  
   
@@ -279,32 +269,3 @@ router.get('/byFLM1/', async function (req, res){
     
     module.exports = router;
       
-      
-      //   first_name:{
-          
-        
-      //     // [Sequelize.Op.and]:{
-      //       [Sequelize.Op.iLike]: `%${f_name}%` ,
-      //       [Sequelize.Op.iLike]: `%${l_name}%`,
-      //       [Sequelize.Op.iLike]: `%${m_name}%`,
-  
-      //     //}
-      //   }
-      //   ,
-      //   last_name:{
-      //     [Sequelize.Op.or]:{
-      //       [Sequelize.Op.iLike]: `%${f_name}%`,
-      //       [Sequelize.Op.iLike]: `%${l_name}%`,
-      //       [Sequelize.Op.iLike]: `%${m_name}%`,
-  
-      //     }
-      //   },
-      //   middle_name:{
-      //     [Sequelize.Op.or]:{
-      //       [Sequelize.Op.iLike]: `%${f_name}%`,
-      //       [Sequelize.Op.iLike]: `%${l_name}%`,
-      //       [Sequelize.Op.iLike]: `%${m_name}%`,
-  
-      //     }
-      //   }
-      // }

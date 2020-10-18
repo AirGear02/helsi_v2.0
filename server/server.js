@@ -15,6 +15,8 @@ app.use('/doctors', require('./routes/doctors'));
 app.use('/hospitals', require('./routes/hospitals'));
 app.use('/schedules', require('./routes/schedules'));
 app.use('/time_slots', require('./routes/timeSlots'));
+app.use('/auth', require('./routes/auth'));
+
 
 
 const PORT = process.env.PORT || 5000;

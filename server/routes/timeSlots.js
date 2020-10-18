@@ -9,6 +9,7 @@ const router = express.Router();
 ////
 function putToTimeRange(arrVisiting,start_time,end_time){
   if(arrVisiting.length==0)return false;
+  
   if(arrVisiting[0].start_time>start_time&&arrVisiting[0].start_time>end_time){
     return true;
     }
@@ -208,6 +209,8 @@ router.put( "/:id", (req, res) =>
       }
     }).then( (result) => res.json(result) )
   );
+
+  
 router.delete("/:id",(req,res)=>{    
     TimeSlot.destroy({
       where: {
