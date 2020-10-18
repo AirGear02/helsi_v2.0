@@ -1,6 +1,8 @@
 const { Op } = require('sequelize');
 const express = require('express');
 
+const multer = require('multer');
+const upload = multer();
 
 const Person = require('../models/Person');
 const validateLogin = require('../validation/auth/login');
@@ -12,7 +14,55 @@ const router = express.Router();
 require('dotenv').config();
 
 
-router.post('/login', async (req, res) => {
+/**
+ *  @swagger
+ *  /auth/login:
+ *    post:
+ *      tags:
+ *      - "Auth"
+ *      summary: Sign in using login and password
+ *      description: Sign in using login and password
+ *      requestBody: 
+ *        content: 
+ *          multipart/form-data:
+ *            schema:
+ *              required:
+ *                  login, password
+ *              type: object
+ *              properties:
+ *                login:
+ *                  type: string
+ *                  description: email or phone number
+ *                  example: user@mail.com
+ *                pass: 
+ *                  type: string
+ *                  example: user1234
+ *                  
+ *      responses: 
+ *        200: 
+ *          description: Successfully logged in
+ *          content: 
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties: 
+ *                  token:
+ *                    type: string
+ *                    example: qwkejiwquIUIUAOOIUIWUE
+ *        400: 
+ *          description: Invalid login or password
+ *          content: 
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties: 
+ *                  message:
+ *                    type: string
+ *                    example: No user with such login
+ * 
+ *   
+ */
+router.post('/login', upload.none(),async (req, res) => {
     const value = await validateLogin(req, res);
 
     const person = await Person.findOne({where: {

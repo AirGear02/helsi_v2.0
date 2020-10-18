@@ -1,11 +1,20 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
+const multer = require('multer');
+
+
+
 
 require('dotenv').config();
 
 const app = express();
-app.use(express.json());
+app.use(express.json())
 app.use(cors());
+
+
+
 
 app.use('/jobs', require('./routes/jobs'));
 app.use('/addresses', require('./routes/addresses'));
@@ -25,8 +34,34 @@ const db = require('./config/database');
 
 //sequelize.sync({force:true}) 
 
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            version: '1.0.0',
+            title: 'Helsi API',
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                }
+            }
+        },
+        
+    },
+    apis: ['./routes/*.js', './models/*.js']
+}
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+app.use('/documentation', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
 db.authenticate()
     .then(() => console.log('Connection has been established successfully.'))
     .catch(error => console.error('Unable to connect to the database:', error));
+
 
 app.listen(PORT, () => console.log(`Server is running on Port: ${PORT}`));
