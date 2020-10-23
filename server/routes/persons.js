@@ -14,6 +14,8 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const Person = require('../models/Person');
 const Address = require('../models/Address');
+const Doctor = require('../models/Doctor');
+
 const { verify } = require('jsonwebtoken');
 
 const SALT_ROUND = 10;
@@ -78,6 +80,46 @@ router.post("/", upload.none(), hasRoles(["Admin"]),async (req, res) =>  {
     res.json(person).status(201);
 });
 
+
+
+router.get('/name/', async function (req, res){
+  if(req.query.name === undefined) return res.status(400).json({message: 'Please input your name'});
+
+  const words = req.query.name.split(/[\s.,-;]+/)
+    .map(word => `%${word}%`)
+    .filter(word => word.length>2);
+  
+  const operator = words.length > 2 ? Sequelize.Op.and : Sequelize.Op.or
+  const persons = await Person.findAll({
+    include: Doctor,
+    where: {
+      '$doctor.person_id$': {[Sequelize.Op.not]: null}, 
+      [operator]:{
+        first_name: {
+          [Sequelize.Op.or]: {
+            [Sequelize.Op.iLike]:{ [Sequelize.Op.any]: words }
+          }
+        },
+        last_name: {
+          [Sequelize.Op.or]: {
+            [Sequelize.Op.iLike]:{ [Sequelize.Op.any]: words }
+          }
+        },
+        middle_name: {
+          [Sequelize.Op.or]: {
+            [Sequelize.Op.iLike]:{ [Sequelize.Op.any]: words }
+          }
+        }
+      }
+      
+    }
+  });
+  res.json(persons);
+
+}
+  
+    
+  );
 
 /**
  *  @swagger
@@ -238,199 +280,8 @@ router.get('/byAddressId/:id', async (req, res) => {
   res.status(201).send(persons);
 });
 
-router.get('/byFLM/', async function (req, res){
-  let name=req.query.filter ? req.query.filter.trim():'';
-  
- 
-  
-  const persons=await Person.findAll({
-    where:{
-      [Sequelize.Op.or]:{
-        first_name:{    
-        
-          
-            [Sequelize.Op.iLike]: `%${name}%`,
-           
-  
-          
-        },
-        last_name:{
-         
-          [Sequelize.Op.iLike]: `%${name}%`,
-  
-          
-        },
-        middle_name:{
-          
-          [Sequelize.Op.iLike]: `%${name}%`,
-  
-          
-        }
-      }
-     
-        }
-        
-    }
-  );
-  
-  res.status(201).send(persons);
-});
-  
 
-// router.get('/byFLM1', async function (req, res){
-//   let f_name='', l_name='',m_name='';
-//   if(req.query.f_name){
-//       f_name='%'+(req.query.f_name)+'%';
-//   }
-//   if(req.query.l_name){
-//       l_name='%'+req.query.l_name+'%';
-//   }
-//   if(req.query.m_name){
-//       m_name='%'+req.query.m_name+'%';
-//   }  
-//   if(f_name==''&&l_name==''&&m_name==""){
-//       f_name='%';
-//   }
-  
-//   const persons=await Person.findAll({
-//     where:{
-//       [Sequelize.Op.or]:{
-//         first_name:{
-          
-        
-//           [Sequelize.Op.or]:{
-//             [Sequelize.Op.iLike]: f_name,
-//             [Sequelize.Op.iLike]: l_name,
-//             [Sequelize.Op.iLike]: m_name,
-  
-//           }
-//         },
-//         last_name:{
-//           [Sequelize.Op.or]:{
-//             [Sequelize.Op.iLike]: f_name,
-//             [Sequelize.Op.iLike]: l_name,
-//             [Sequelize.Op.iLike]: m_name,
-  
-//           }
-//         },
-//         middle_name:{
-//           [Sequelize.Op.or]:{
-//             [Sequelize.Op.iLike]: f_name,
-//             [Sequelize.Op.iLike]: l_name,
-//             [Sequelize.Op.iLike]: m_name,
-  
-//           }
-//         }
-//       }
-     
-//         }
-        
-//     },
-//   );
-  
-//   res.status(201).send(persons);
-// });
-
-// router.get('/byFLM1/', async function (req, res){
-//   let values=req.query.filter.split(' ');
-//   console.log(values.length); 
-//   let f_name='', l_name='',m_name='';
-//   if(values.length==0){
-//     f_name='%'
-//   }
-//   else if(values.length==1){
-//     f_name=values[0].trim();
-//   }
-//   else  if(values.length==2){ 
-//      f_name=values[0].trim();    
-//       l_name=values[1].trim();
-//     }
-//   else{  
-//       f_name=values[0].trim();   
-//       l_name=values[1].trim();
-//       m_name=values[2].trim();
-//     }  
-//   console.log(f_name,l_name,m_name);
- 
-//   const persons=await Person.findAll({
-//     where:{
-//       [Sequelize.Op.or]:{
-//         first_name:{
-          
-        
-//           [Sequelize.Op.or]:{
-//             [Sequelize.Op.iLike]: `%${f_name}%`,
-//             [Sequelize.Op.iLike]: `%${l_name}%`,
-//             [Sequelize.Op.iLike]: `%${m_name}%`,
-  
-//           }
-//         },
-//         last_name:{
-//           [Sequelize.Op.or]:{
-//             [Sequelize.Op.iLike]: `%${f_name}%`,
-//             [Sequelize.Op.iLike]: `%${l_name}%`,
-//             [Sequelize.Op.iLike]: `%${m_name}%`,
-  
-//           }
-//         },
-//         middle_name:{
-//           [Sequelize.Op.or]:{
-//             [Sequelize.Op.iLike]: `%${f_name}%`,
-//             [Sequelize.Op.iLike]: `%${l_name}%`,
-//             [Sequelize.Op.iLike]: `%${m_name}%`,
-  
-//           }
-//         }
-//       }
-     
-//         }
-        
-//     },
-//   );
-  
-//   res.status(201).send(persons);
-// });
-router.get('/byFLM1/', async function (req, res){
-  
-  let values=req.query.filter?req.query.filter.split(' '):[];
-  console.log(values.length); 
-  let f_name='%', l_name='%',m_name='%';
-  if(values.length!=0){
-    if(values.length==1){
-      f_name='%'+values[0].trim()+'%';
-      
-
-    }
-    else  if(values.length==2){ 
-       f_name='%'+values[0].trim()+'%';    
-        l_name='%'+values[1].trim()+'%';
-      }
-    else{  
-        f_name='%'+values[0].trim()+'%';   
-        l_name='%'+values[1].trim()+'%';
-        m_name='%'+values[2].trim()+'%';
-      }  
-  }
-  
-  console.log(f_name,l_name,m_name);
- 
-  const persons=await Person.findAll({
-    where:{
-     
-      [Sequelize.Op.and]:[
-              {first_name:{[Sequelize.Op.iLike]: `${f_name}`}},
-              {last_name:{[Sequelize.Op.iLike]: `${l_name}`}},        
-              {middle_name:{[Sequelize.Op.iLike]: `${m_name}`}},  
-          ]
-        }
-      });
-      res.status(201).send(persons);
-}
-  
-    
-  );
-    
-  router.get('/', async (req, res) => {
+    router.get('/', async (req, res) => {
     const persons = await Person.findAll({
         
         include: [Address]
