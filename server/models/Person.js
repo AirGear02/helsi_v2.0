@@ -73,6 +73,9 @@ const Person = db.define('person', {
         type: Sequelize.STRING,
         allowNull: false 
     },
+    photo: {
+        type: Sequelize.STRING
+    },
 
     role: {
         type: Sequelize.ENUM('User', 'Admin', 'Doctor'),
