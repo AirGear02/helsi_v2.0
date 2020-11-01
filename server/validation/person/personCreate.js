@@ -49,7 +49,7 @@ const validatingSchema = Joi.object().keys({
 
 })
 
-module.exports = async (req, res) => {
+module.exports = async (req, res, next) => {
     const{error, value} = validatingSchema.validate(req.body, {stripUnknown: true, abortEarly: false});
 
     
@@ -60,10 +60,11 @@ module.exports = async (req, res) => {
 
   
     const personsByEmail = await Person.count({where: {email: value.email}});
-    if(personsByEmail !== 0) res.json({message: 'This email already exists'}, 400);
+    if(personsByEmail !== 0) res.status(400).json({message: 'This email already exists'});
 
     const personsByPhone = await Person.count({where: {phone_number: value.phone_number}});
-    if(personsByPhone !== 0) res.json({message: 'This phone number already exists'}, 400);
+    if(personsByPhone !== 0) res.status(400).json({message: 'This phone number already exists'});
 
-    return value;
+    req.body = value;
+    next();
 }

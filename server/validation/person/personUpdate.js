@@ -27,32 +27,35 @@ const validatingSchema = Joi.object().keys({
     email: Joi.string().trim()
     .email(),
 
-
+    photo: Joi.any().allow(null),
+    
     date_born: Joi.date()
         .max('now')
         .iso(),
     
+    
 })
 
-module.exports = async (req, res) => {
+module.exports = async (req, res, next) => {
     const{error, value} = validatingSchema.validate(req.body, {stripUnknown: true, abortEarly: false});
 
     
-    if(error !== undefined) res.json({message: error.details.map(detail => detail.message)}, 400);
+    if(error !== undefined) res.status(400).json({message: error.details.map(detail => detail.message)});
     
     if(value.addressId !== undefined) {
         const isAddressExists = await checkForeignKey(value.addressId, Address);
-        if(!isAddressExists) res.json({message: 'Can not find address'}, 400);
+        if(!isAddressExists) res.status(400).json({message: 'Can not find address'});
     }
 
     if(value.email !== undefined) {
         const personsByEmail = await Person.count({where: {email: value.email}});
-        if(personsByEmail !== 0) res.json({message: 'This email already exists'}, 400);
+        if(personsByEmail !== 0) res.status(400).json({message: 'This email already exists'});
     }
     
     if(value.phone_number !== undefined) {
         const personsByPhone = await Person.count({where: {phone_number: value.phone_number}});
-        if(personsByPhone !== 0) res.json({message: 'This phone number already exists'}, 400);
+        if(personsByPhone !== 0) res.status(400).json({message: 'This phone number already exists'});
     }
-    return value;
+    req.body = value;
+    next();
 }

@@ -3,12 +3,25 @@ const express = require('express');
 const { Sequelize } = require('sequelize');
 const hasRoles = require('../middleware/hasRoles');
 const hasRolesOrAccOwner = require('../middleware/hasRolesOrAccountOwner');
+const createFile = require('../utils/google-cloud/create-file');
+const removeFile = require('../utils/google-cloud/remove-file');
 
 const personCreate = require('../validation/person/personCreate');
 const personUpdate = require('../validation/person/personUpdate');
 const multer = require('multer');
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  fileSize: 5 * 1024 * 1024,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
 
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -56,6 +69,10 @@ const SALT_ROUND = 10;
  *                  $ref: '#/components/schemas/Person/properties/addressId'
  *                date_born: 
  *                  $ref: '#/components/schemas/Person/properties/date_born'
+ *                photo:
+ *                  type: file
+ *                  description: profile_photo
+ *                
  *                  
  *      responses: 
  *        201: 
@@ -73,10 +90,12 @@ const SALT_ROUND = 10;
  * 
  *   
  */
-router.post("/", upload.none(), hasRoles(["Admin"]),async (req, res) =>  {      
-    const value = await personCreate(req, res);
-    value.pass = await bcrypt.hash(value.pass, SALT_ROUND);
-    const person = await Person.create(value);
+router.post("/", upload.single('photo'), hasRoles(["Admin"]), personCreate, async (req, res) =>  {      
+    req.body.pass = await bcrypt.hash(req.body.pass, SALT_ROUND);
+    if(req.file) {
+      req.body.photo = await createFile(req.file);
+    }
+    const person = await Person.create(req.body);
     res.json(person).status(201);
 });
 
@@ -153,7 +172,7 @@ router.get('/name/', async function (req, res){
  * 
  *   
  */
-router.get( "/:id", upload.none(), hasRoles(["Admin", "User"]), async (req, res) => {
+router.get( "/:id", upload.single('photo'), hasRoles(["Admin", "User"]), async (req, res) => {
     const person = await Person.findByPk(req.params.id,{include: [Address]});
     person === null ? res.json({message: `No person with id ${req.params.id}`}, 400) : res.json(person, 200);
  });
@@ -198,6 +217,9 @@ router.get( "/:id", upload.none(), hasRoles(["Admin", "User"]), async (req, res)
  *                  $ref: '#/components/schemas/Person/properties/addressId'
  *                date_born: 
  *                  $ref: '#/components/schemas/Person/properties/date_born'
+ *                photo:
+ *                  type: file
+ *                  description: profile_photo
  *                  
  *      responses: 
  *        201: 
@@ -215,13 +237,21 @@ router.get( "/:id", upload.none(), hasRoles(["Admin", "User"]), async (req, res)
  * 
  *   
  */
-router.put( "/:id", upload.none(), hasRolesOrAccOwner(['Admin']), async (req, res) => {
+router.put( "/:id", upload.single('photo'), hasRolesOrAccOwner(['Admin']), personUpdate, async (req, res) => {
     const person = await Person.findByPk(req.params.id);
     if(person === null) res.json({message: `No person with id ${req.params.id}`}, 400);
 
-    const value = await personUpdate(req, res);
-    const newPerson = await person.update(value);
-    res.json(newPerson, 201);
+    if(req.file) {
+      if(person.photo !== '')  removeFile(person.photo);
+      req.body.photo = await createFile(req.file);
+    }
+
+    if(req.body.photo !== undefined && req.body.photo === null) {
+      removeFile(person.photo);
+    }
+
+    const newPerson = await person.update(req.body);
+    res.status(201).json(newPerson);
 });
 
 /**
