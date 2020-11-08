@@ -1,5 +1,6 @@
 const express = require('express');
 const Address = require('../models/Address');
+const Sequelize = require('sequelize');
 
 const router = express.Router();
 
@@ -20,7 +21,13 @@ router.get('/', async (req, res) => {
     res.status(201).send(addresses);
 });
 
+router.get('/cities', async(req, res) => {
+  const cities = await Address.findAll({attributes: [
+    Sequelize.fn('DISTINCT', Sequelize.col('city_village')), 'city_village']
+  });
 
+  return res.status(200).json({cities: cities.map(city => city.city_village)});
+})
 
 router.post("/", async function (req, res) {         
     if(!req.body) return res.sendStatus(400);

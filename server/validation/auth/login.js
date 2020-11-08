@@ -12,7 +12,7 @@ const validatingSchema = Joi.object().keys({
 module.exports = (req, res) => {
     const {error, value} = validatingSchema.validate(req.body);
 
-    if(error !== undefined) res.json({message: error.details.map(detail => detail.message)}, 400);
+    if(error !== undefined) return res.status(400).json({message: error.details.map(detail => detail.message)});
 
     return value;
 }
