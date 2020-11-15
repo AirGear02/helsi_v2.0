@@ -6,7 +6,7 @@ const Schedule = require('../models/Schedule');
 const TimeSlot = require('../models/TimeSlot');
 
 const sequelize = require('../config/database');
-const { getTimeslotByDoctorIdAndDate,getTimeslotByDoctorId } = require('../database.js/timeslot');
+const { getTimeslotByDoctorIdAndDate,getTimeslotByDoctorId,getTimeslotByDoctorIdAndHospitalId,getTimeslotByDocIdAndHospIdAndDate } = require('../database.js/timeslot');
 
 const router = express.Router();
 ////
@@ -301,8 +301,39 @@ router.get('/:id/byTimeSlot/',async(req,res)=>{
   else{
     await getTimeslotByDoctorId(doctorId)
     .then(result=>res.status(200).send(result));
+  } 
+});
+router.get('/:id_doctor/timeslotsHospDoctor/',async(req,res)=>{
+  const doctorId=req.params.id_doctor;
+  console.log(doctorId);
+  const hospitalId=req.query.hospital_id;
+  console.log(hospitalId);
+  const date=req.query.date;
+  if(req.query.hospital_id&&req.query.date){
+    await getTimeslotByDocIdAndHospIdAndDate(doctorId,hospitalId,date)
+    .then(result=>res.status(200).send(result));
   }
-//let dateVisiting=new Date(req.query.date);
+  else if(req.query.hospital_id){
+    await getTimeslotByDoctorIdAndHospitalId(doctorId,hospitalId)
+    .then(result=>res.status(200).send(result));
+
+  }
+  else{
+    await getTimeslotByDoctorId(doctorId)
+    .then(result=>res.status(200).send(result));
+  }
+   
+  // if (req.query.date){
+  //   let dateVisiting=new Date(req.query.date);
+  //   dateVisiting=dateVisiting.toISOString();
+  //   await getTimeslotByDoctorIdAndDate(doctorId,dateVisiting)
+  //   .then(result=>res.status(200).send(result));
+  // }
+  // else{
+  //   await getTimeslotByDoctorId(doctorId)
+  //   .then(result=>res.status(200).send(result));
+  // }
+
 
  
 });
