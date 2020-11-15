@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 
-const JobTitle = db.define('job_titles', {
+const JobTitle = db.sequelize.define('job_titles', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

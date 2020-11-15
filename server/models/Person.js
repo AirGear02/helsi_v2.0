@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/database');
 const Address = require('./Address')
 
-const Person = db.define('person', {
+const Person = db.sequelize.define('person', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -35,6 +35,13 @@ const Person = db.define('person', {
     addressId:{
         type:Sequelize.INTEGER,
         allowNull:false
+    },
+    doctor_id:{
+        type:Sequelize.INTEGER,
+        //allowNull:false
+    },
+    photo: {
+        type: Sequelize.STRING
     },
     role: {
         type: Sequelize.ENUM('User', 'Admin', 'Doctor'),

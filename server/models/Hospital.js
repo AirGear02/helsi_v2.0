@@ -3,7 +3,7 @@ const db = require('../config/database');
 const Address = require('./Address');
 
 
-const Hospital = db.define('hospital', {
+const Hospital = db.sequelize.define('hospital', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

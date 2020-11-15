@@ -4,6 +4,11 @@ const Address = require('../models/Address');
 const { Sequelize } = require('sequelize');
 const router = express.Router();
 
+
+///put photo
+
+///
+
 router.post("/", async function (req, res) {         
     if(!req.body) return res.sendStatus(400);
          
@@ -17,6 +22,8 @@ router.post("/", async function (req, res) {
     const pass=req.body.pass;
     const role=req.body.role;
     const addressId=req.body.addressId;
+    const photo=req.body.photo;
+    const doctor_id=req.body.doctor_id;
     Person.create({ //id:id,
                     first_name: first_name,
                      last_name:last_name,
@@ -27,6 +34,8 @@ router.post("/", async function (req, res) {
                      pass:pass,
                      role:role,
                      addressId:addressId,
+                     photo:photo,
+                     doctor_id:doctor_id
                     }       
                      ).then((result)=>{                    
                       res.status(201).send(res.json(result));
@@ -39,7 +48,7 @@ router.get( "/id/:id", async function(req, res){
 
 router.put( "/:id", (req, res) =>
     Person.update({
-        addressId: req.body.addressId
+        photo: req.body.photo
     },
     {
       where: {
@@ -47,6 +56,66 @@ router.put( "/:id", (req, res) =>
       }
     }).then( (result) => res.json(result) )
   );
+//   router.put( "/:photo_path", (req, res) =>
+//   Person.update({
+//       photo: req.body.photo
+//   },
+//   {
+//     where: {
+//       id: req.params.id
+//     }
+//   }).then( (result) => res.json(result) )
+// );
+
+const app = express();
+ const path = require('path');
+const multer = require('multer');
+router.use('uploado', express.static(path.join(__dirname, '/upload')));
+//let fileInfo='';
+let n="";
+// let maxSize = 1 * 1000 * 1000;
+let maxSize = 1 * 1500 * 1500;
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      //console.log(file);
+        cb(null, 'uploado');
+    },
+    filename: (req, file, cb) => {
+         n = Date.now() +"Person_photo"+ file.originalname
+        cb(null, n);
+    }
+
+   
+});
+const fileFilter = (req, file, cb) => {
+ // console.log(file)
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+const upload = multer({ storage: storage, fileFilter: fileFilter,limits: { fileSize: maxSize } });
+
+//Upload route
+router.post('/upload', upload.single('image'), (req, res, next) => {
+  console.log(n)
+    try {
+      // console.log("OOO",upload.storage.getFilename())
+        return res.status(201).json({
+            filename:n,
+            message: 'File uploded successfully',
+            // limit:file.fileSize
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+//router.listen(port, () => console.log(`Hello world app listening on port ${port}!`));
+
+
+//////////
 router.delete("/:id",(req,res)=>{
     
     Person.destroy({
@@ -276,7 +345,7 @@ router.get('/byFLM1/', async function (req, res){
     res.status(201).send(persons);
   }
 )
-    
+
     module.exports = router;
       
       

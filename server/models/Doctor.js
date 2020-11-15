@@ -3,7 +3,7 @@ const db = require('../config/database');
 const Person = require('./Person');
 const JobTitle = require('./JobTitle');
 
-const Doctor = db.define('doctors', {
+const Doctor = db.sequelize.define('doctors', {
     id: {
         type: Sequelize.INTEGER, // sequilize.primary key
         autoIncrement: true,

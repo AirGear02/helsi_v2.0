@@ -5,6 +5,7 @@ const JobTiltle = require('../models/JobTitle');
 // const { Sequelize } = require('sequelize/types');
 const { Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
+
 const router = express.Router();
 
 // const sequelize = new Sequelize('helsi', 'postgres', '6116', {
@@ -48,70 +49,13 @@ async function getDoctorByName(lastName){
     return doctors[0];
 }
 
-async function getDoctorByJob(job){
-  doctors=await sequelize.sequelize.query(`SELECT "doctors"."id", "doctors"."person_id" 
-  AS "personId", "doctors"."job_title_id" AS "jobTitleId", "person"."id" AS 
-  "personId", "person"."first_name" AS "first_name", "person"."last_name"
-  AS "last_name", "person"."middle_name" AS "middle_name",
-  "person"."date_born" AS "date_born", "person"."phone_number"
-  AS "phone_number", "person"."email" AS "email",
-  "person"."pass" AS "pass", "person"."address_id" AS "addressId",
-  "person"."role" AS "role", "job_title"."id" AS "job_titleId", "job_title"."title"
-  AS "job_titleTitle" FROM "doctors" AS "doctors" LEFT OUTER JOIN "persons" AS "person" ON
-  "doctors"."person_id" = "person"."id" LEFT OUTER JOIN "job_titles" AS "job_title" ON "doctors"."job_title_id" = "job_title"."id" 
- 
-  WHERE "job_title"."title" LIKE ? ORDER BY last_name, first_name, job_title`,
-  {
-    replacements: [`%${job}%`],
-    type: Sequelize.SELECT 
-  });
-  return doctors[0];
-}
-async function getDoctorByCommunity(community){  
-  doctors=await sequelize.sequelize.query(`Select doctor_id
-  from hospitals inner join work_places on
-  hospitals.id=hospital_id
-  where community=?
-  GROUP BY doctor_id
-  ORDER BY doctor_id`,
-  {
-    replacements: [`${community}`],
-    type: Sequelize.SELECT 
-  });
-  console.log(doctors[0])
-  return doctors[0];
-}
-async function getDoctorByDistrict(district){
-  
-    doctors=await sequelize.sequelize.query(`SELECT "doctor_id" 
-    FROM "persons" INNER JOIN "addresses" ON "persons"."address_id"="addresses"."id"
-    WHERE "addresses"."city_village" LIKE ? AND "doctor_id">0
-    GROUP BY "doctor_id"`,
-    {
-      replacements: [`%${district}%`],
-      type: Sequelize.SELECT 
-    });
-   return doctors[0];
-  
-}
-
 router.get('/', async (req, res) => {
   if (req.query.name){
     getDoctorByName(req.query.name)
     .then(result=>res.status(200).send(result));
   }
   else if (req.query.job){
-    getDoctorByJob(req.query.job)
-    .then(result=>res.status(200).send(result));
-  }
-  else if (req.query.community){
-    getDoctorByCommunity(req.query.community)
-   .then(result=>res.status(200).send(result)); 
     
-  }
-  else if(req.query.district){
-    getDoctorByDistrict(req.query.district)
-    .then(result=>res.status(200).send(result)); 
   }
   else {
     const doctors = await Doctor.findAll({include: [Person, JobTiltle]});
@@ -120,7 +64,6 @@ router.get('/', async (req, res) => {
   }
     
 );
-
 
 router.post("/", async function (req, res) {         
     if(!req.body) return res.sendStatus(400);
@@ -242,61 +185,6 @@ router.get('/byJobTitle/:jobTitle',async(req,res)=>{
   });
   res.status(201).send(doctors[0]);
   });
-  router.get('/byAddressPerson/:city_village',async(req,res)=>{
-    const city_village=req.params.city_village;
-    doctors=await sequelize.sequelize.query(`SELECT "doctor_id" 
-    FROM "persons" INNER JOIN "addresses" ON "persons"."address_id"="addresses"."id"
-    WHERE "addresses"."city_village" LIKE ? AND "doctor_id">0
-    GROUP BY "doctor_id"`,
-    {
-      replacements: [`%${city_village}%`],
-      type: Sequelize.SELECT 
-    });
-    res.status(201).send(doctors[0]);
-  });
-    // GROUP by "doctor_id"
-    
-    
-   
-    // WHERE "job_title"."title" LIKE ? ORDER BY last_name, first_name, job_title`,
-    // {
-    //   replacements: [`%${jobTitle}%`],
-    //   type: Sequelize.SELECT 
-    // });
-   // );
-   
-    // router.get('/byCommunity/:community',async(req,res)=>{
-    //   const community=req.params.community;
-      // doctors=await sequelize.sequelize.query(`Select doctor_id
-      // from hospitals inner join work_places on
-      // hospitals.id=hospital_id
-      // where community=?
-      // GROUP BY doctor_id
-      // ORDER BY doctor_id`,
-      // {
-      //   replacements: [`${community}`],
-      //   type: Sequelize.SELECT 
-      // });
-      //getDoctorByCommunity(community).then(result=>res.status(200).send(result));
-      //res.status(200).send(getDoctorByCommunity(community))
-      //});
-
-      
-      // GROUP by "doctor_id"
-      
-      
-     
-      // WHERE "job_title"."title" LIKE ? ORDER BY last_name, first_name, job_title`,
-      // {
-      //   replacements: [`%${jobTitle}%`],
-      //   type: Sequelize.SELECT 
-      // });
-     // );
-      
-  // select doctor_id
-// from persons inner join addresses on addresses.id=address_id
-// where city_village LIKE 'Khotyn' AND doctor_id >1
-// Group by doctor_id
   // doctors=await sequelize.sequelize.query(`SELECT "doctors"."id", "doctors"."person_id" 
   // AS "personId", "doctors"."job_title_id" AS "jobTitleId", "person"."id" AS 
   // "person.id", "person"."first_name" AS "person.first_name", "person"."last_name"
@@ -347,7 +235,31 @@ router.get('/byJobTitle/:jobTitle',async(req,res)=>{
 // res.status(201).send(doctors[0]);
 // });
 
+router.get('/byTimeSlot/:lastName',async(req,res)=>{
+  console.log("!!!", sequelize);
+const lastName=req.params.lastName;
+const doctorId=1;
+// stringValue + "+0000"
+let dateVis=(new Date("2020-03-02"))
+let dateVisiting= (new Date(dateVis.getTime() - dateVis.getTimezoneOffset() * 720000).toISOString()); 
+console.log(dateVisiting);
+//const dateVisiting=new Date("2020-03-02T22:00:00.000Z");
+doctors=await sequelize.sequelize.query(` SELECT "timeSlot"."start_time" AS "start_time", 
+"timeSlot"."end_time" AS "end_time", "timeSlot"."date_visiting" AS "date_visiting",
+"workPlace"."doctor_id" AS "doctor_id"
+ FROM "time_slots" AS "timeSlot" INNER JOIN "schedules" AS "schedule"
+ ON "timeSlot"."schedule_id" = "schedule"."id" INNER JOIN 
+ "work_places" AS "workPlace" ON "schedule"."work_place_id" = "workPlace"."id"
+ 
+WHERE "workPlace"."doctor_id"=:doctor_id AND "timeSlot"."date_visiting"=:date_visiting`,
 
+{
+  replacements: { doctor_id: doctorId,date_visiting:dateVisiting},
+  //replacements: { doctor_id: doctorId},
+  type: Sequelize.SELECT 
+});
+res.status(200).send(doctors[0]);
+});
 
 // router.get('/byTimeSlot/:lastName',async(req,res)=>{
 //   console.log("!!!", sequelize);

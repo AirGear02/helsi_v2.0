@@ -3,7 +3,7 @@ const db = require('../config/database');
 const WorkPlace = require('./WorkPlace');
 
 
-const Schedule = db.define('schedule', {
+const Schedule = db.sequelize.define('schedule', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

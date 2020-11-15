@@ -4,7 +4,7 @@ const Hospital = require('./Hospital');
 const Doctor = require('./Doctor');
 
 
-const WorkPlace = db.define('workPlace', {
+const WorkPlace =db.sequelize.define('workPlace', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -17,9 +17,9 @@ const WorkPlace = db.define('workPlace', {
 }, { timestamps: false, underscored: true});
 
 WorkPlace.belongsTo(Hospital);
-//Hospital.hasMany(WorkPlace);
+Hospital.hasMany(WorkPlace);
 
 WorkPlace.belongsTo(Doctor);
-//Doctor.hasMany(WorkPlace);
+Doctor.hasMany(WorkPlace);
 
 module.exports = WorkPlace;

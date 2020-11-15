@@ -4,7 +4,7 @@ const Person = require('./Person');
 const Schedule = require('./Schedule');
 
 
-const TimeSlot = db.define('timeSlot', {
+const TimeSlot = db.sequelize.define('timeSlot', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

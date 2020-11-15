@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 //
-const Address = db.define('addresses', {
+const Address = db.sequelize.define('addresses', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -30,3 +30,7 @@ const Address = db.define('addresses', {
 
 
 module.exports = Address;
+
+// select *
+// from persons inner join addresses on addresses.id=address_id
+// where city_village LIKE 'Khotyn'

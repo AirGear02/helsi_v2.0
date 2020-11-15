@@ -23,7 +23,7 @@ const db = require('./config/database');
 
 //sequelize.sync({force:true}) 
 
-db.authenticate()
+db.sequelize.authenticate()
     .then(() => console.log('Connection has been established successfully.'))
     .catch(error => console.error('Unable to connect to the database:', error));
 
