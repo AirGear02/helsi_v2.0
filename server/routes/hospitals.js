@@ -1,13 +1,23 @@
 const express = require('express');
 const Hospital = require('../models/Hospital');
 const Address = require('../models/Address');
-
 const router = express.Router();
+const { Sequelize } = require('sequelize');
+const sequelize = require('../config/database');
+const { getHospitalsByIdDoctor } = require('../database.js/hospital');
 
 
 router.get('/', async (req, res) => {
-    const hospitals = await Hospital.findAll({include: [Address]});
-    res.status(201).send(hospitals);
+    if(!req.query.doctor_id){
+      const hospitals = await Hospital.findAll({include: [Address]});
+      res.status(201).send(hospitals);
+    }
+    else{
+      const doctorId=req.query.doctor_id;      
+      getHospitalsByIdDoctor(doctorId)
+      .then(result=>res.status(200).send(result));     
+    }
+   
 });
 
 router.post("/", async function (req, res) {         

@@ -5,7 +5,7 @@ const JobTiltle = require('../models/JobTitle');
 // const { Sequelize } = require('sequelize/types');
 const { Sequelize } = require('sequelize');
 const sequelize = require('../config/database');
-const { getDoctorByName, getDoctorByJob, getDoctorByCommunity, getDoctorByDistrict } = require('../database.js/doctor');
+const { getDoctorByName, getDoctorByJob, getDoctorByCommunity, getDoctorByDistrict, getDoctorByAddressPerson } = require('../database.js/doctor');
 const router = express.Router();
 
 // const sequelize = new Sequelize('helsi', 'postgres', '6116', {
@@ -121,8 +121,8 @@ router.get('/byPersonId/:id', async (req, res) => {
 });
 router.get('/byAddressPerson/:city_village',async(req,res)=>{
   const city_village=req.params.city_village;
-  getDoctorByA
-  res.status(201).send(doctors[0]);
+  getDoctorByAddressPerson(city_village)
+  .then(result=>res.status(200).send(result)); 
 });
  
 router.get('/byLastName/:lastName',async(req,res)=>{
