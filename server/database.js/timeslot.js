@@ -65,6 +65,7 @@ const getTimeslotByDoctorId= async (doctorId)=>{
       });
      return doctors[0];
   }
+  
 
 
 module.exports.getTimeslotByDoctorIdAndDate = getTimeslotByDoctorIdAndDate;
