@@ -6,6 +6,7 @@ const Schedule = require('../models/Schedule');
 const TimeSlot = require('../models/TimeSlot');
 
 const sequelize = require('../config/database');
+const { getTimeslotByDoctorIdAndDate,getTimeslotByDoctorId } = require('../database.js/timeslot');
 
 const router = express.Router();
 ////
@@ -229,8 +230,16 @@ router.post("/", async function (req, res) {
             }).catch(err=>console.log(err));
           }
           else{
+            formError={}
+            if(!freePerson){
+              formError.freePerson="this person is busy";
+            }
+            if(!freeSchedule){
+              formError.freeSchedule="this schedule is busy";
+            }
+
               console.log("error with data");
-              return res.sendStatus(400);
+              return res.status(409).send(JSON.stringify(formError));
     }
  //console.log ("keep",await scheduleKeepsStartEnd(scheduleId,start_time,end_time)) 
     //getScheduleById(scheduleId);
@@ -255,7 +264,7 @@ router.post("/", async function (req, res) {
 //   }
 });
 router.get( "/:id", async function(req, res){
-    if(!req.params.id)return res.sendStatus(200);    
+    if(!req.params.id)return res.sendStatus(200);  
     TimeSlot.findByPk(req.params.id,{include: [Schedule]}).then( (result) => res.json(result))
  } );
 
@@ -280,29 +289,30 @@ router.delete("/:id",(req,res)=>{
       }
     }).then( (result) => res.json(result) )
 });
-router.get('/byTimeSlot/:lastName',async(req,res)=>{
-  console.log("!!!", sequelize);
-const lastName=req.params.lastName;
-const doctorId=1;
-// stringValue + "+0000"
-let dateVis=(new Date("2020-10-09"))
-//let dateVisiting= (new Date(dateVis.getTime() - dateVis.getTimezoneOffset() * 720000).toISOString()); 
-let dateVisiting=dateVis.toISOString();
-console.log(dateVisiting);
-//const dateVisiting=new Date("2020-03-02T22:00:00.000Z");
-doctors=await sequelize.sequelize.query(` SELECT "timeSlot"."start_time" AS "start_time", 
-"timeSlot"."end_time" AS "end_time", "timeSlot"."date_visiting" AS "date_visiting",
-"workPlace"."doctor_id" AS "doctor_id"
- FROM "time_slots" AS "timeSlot" INNER JOIN "schedules" AS "schedule"
- ON "timeSlot"."schedule_id" = "schedule"."id" INNER JOIN 
- "work_places" AS "workPlace" ON "schedule"."work_place_id" = "workPlace"."id" 
-WHERE "workPlace"."doctor_id"=:doctor_id AND "timeSlot"."date_visiting"=:date_visiting`,
-{
-  replacements: { doctor_id: doctorId,date_visiting:dateVisiting},
-  //replacements: { doctor_id: doctorId},
-  type: Sequelize.SELECT 
+
+router.get('/:id/byTimeSlot/',async(req,res)=>{
+  const doctorId=req.params.id;
+  if (req.query.date){
+    let dateVisiting=new Date(req.query.date);
+    dateVisiting=dateVisiting.toISOString();
+    await getTimeslotByDoctorIdAndDate(doctorId,dateVisiting)
+    .then(result=>res.status(200).send(result));
+  }
+  else{
+    await getTimeslotByDoctorId(doctorId)
+    .then(result=>res.status(200).send(result));
+  }
+//let dateVisiting=new Date(req.query.date);
+
+ 
 });
-res.status(200).send(doctors[0]);
-});
+// router.get('/:id/byTimeSlot/',async(req,res)=>{
+  
+//   let dateVisiting=new Date(req.query.date);
+//   const doctorId=req.params.id;
+//    dateVisiting=dateVisiting.toISOString();
+//   await getTimeslotByDoctorIdAndDate(doctorId,dateVisiting)
+//   .then(result=>res.status(200).send(result));
+//   });
 
 module.exports = router;
