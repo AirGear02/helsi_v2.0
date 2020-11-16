@@ -140,7 +140,37 @@ router.get('/name/', async function (req, res){
     
   );
 
-/**
+ /**
+ *  @swagger
+ *  /persons/photo:
+ *    get:
+ *      tags:
+ *      - "Person"
+ *      summary: Get person'photo
+ *      description: Return photo
+ *      security: 
+ *        - bearerAuth: []                 
+ *      responses: 
+ *        200: 
+ *          description: Photo successfully found
+ *          content: 
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties: 
+ *                  photo:
+ *                    type: string
+ *                    example: https://cloud.com/photo/123
+ * 
+ *   
+ */
+router.get("/photo", upload.none(), hasRoles(['Admin', 'User', 'Doctor']), async (req, res) => {
+  return res.status(200).json(await Person.findByPk(req.body.user.id, {attributes: ['photo']}));  
+  
+});
+ 
+
+  /**
  *  @swagger
  *  /persons/{id}:
  *    get:
@@ -176,6 +206,7 @@ router.get( "/:id", upload.single('photo'), hasRoles(["Admin", "User"]), async (
     const person = await Person.findByPk(req.params.id,{include: [Address]});
     person === null ? res.json({message: `No person with id ${req.params.id}`}, 400) : res.json(person, 200);
  });
+
 
 
 /**
@@ -320,5 +351,5 @@ router.get('/byAddressId/:id', async (req, res) => {
   }
 )
     
-    module.exports = router;
+module.exports = router;
       

@@ -17,9 +17,11 @@ const WorkPlace = db.define('workPlace', {
 }, { timestamps: false, underscored: true});
 
 WorkPlace.belongsTo(Hospital);
-//Hospital.hasMany(WorkPlace);
+Hospital.hasMany(WorkPlace);
 
 WorkPlace.belongsTo(Doctor);
-//Doctor.hasMany(WorkPlace);
+Doctor.hasMany(WorkPlace);
+
+Doctor.belongsToMany(Hospital, {through: WorkPlace})
 
 module.exports = WorkPlace;

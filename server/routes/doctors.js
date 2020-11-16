@@ -1,9 +1,104 @@
 const express = require('express');
 const Doctor = require('../models/Doctor');
 const Person = require('../models/Person');
-const JobTiltle = require('../models/JobTitle')
+const JobTiltle = require('../models/JobTitle');
+const WorkPlace = require('../models/WorkPlace');
+const Hospital = require('../models/Hospital');
+const Address   = require('../models/Address');
+const {Sequelize} = require('sequelize');
 
 const router = express.Router();
+
+
+router.get('/name/', async function (req, res){
+  if(req.query.name === undefined) return res.status(400).json({message: 'Please input your name'});
+
+  const words = req.query.name.split(/[\s.,-;]+/)
+    .map(word => `%${word}%`)
+    .filter(word => word.length>2);
+  
+  const operator = words.length > 2 ? Sequelize.Op.and : Sequelize.Op.or
+  const persons = await Doctor.findAll({
+    include: [Person, Hospital, JobTiltle],
+    where: {
+      [operator]:{
+        '$person.first_name$': {
+          [Sequelize.Op.or]: {
+            [Sequelize.Op.iLike]:{ [Sequelize.Op.any]: words }
+          }
+        },
+        '$person.last_name$': {
+          [Sequelize.Op.or]: {
+            [Sequelize.Op.iLike]:{ [Sequelize.Op.any]: words }
+          }
+        },
+        '$person.middle_name$': {
+          [Sequelize.Op.or]: {
+            [Sequelize.Op.iLike]:{ [Sequelize.Op.any]: words }
+          }
+        }
+      }
+      
+    }
+  });
+  res.status(200).json(persons.map(person => minimizeDoctor(person)));
+
+}
+  
+);
+
+
+router.get('/hospital/', async function (req, res){
+  if(req.query.hospital === undefined) return res.status(400).json({message: 'Please input your name'});
+
+  const hosp_name  = `%${req.query.hospital}%`;
+
+  const persons = await Doctor.findAll({
+    include: [Person, Hospital, JobTiltle],
+    where: {
+        '$hospitals.name_hosp$': {
+            [Sequelize.Op.iLike]: hosp_name 
+          }
+        },
+      }
+      );
+      res.status(200).json(persons.map(person => minimizeDoctor(person)));
+
+}
+  
+);
+
+router.get('/job/', async function (req, res){
+  if(req.query.job === undefined) return res.status(400).json({message: 'Please input your name'});
+
+  const hosp_name  = `%${req.query.job}%`;
+
+  const persons = await Doctor.findAll({
+    include: [Person, Hospital, JobTiltle],
+    where: {
+        '$job_title.title$': {
+            [Sequelize.Op.iLike]: hosp_name 
+          }
+        },
+      }
+      );
+      res.status(200).json(persons.map(person => minimizeDoctor(person)));
+
+}
+  
+);
+
+const minimizeDoctor = (doctor) => {
+  const newPerson = {};
+  newPerson.first_name = doctor.person.first_name;
+  newPerson.last_name = doctor.person.last_name;
+  newPerson.middle_name = doctor.person.middle_name;
+  newPerson.job = doctor.job_title.title;
+  newPerson.hospitals = doctor.hospitals.map(hosp => hosp.name_hosp);
+  newPerson.photo = doctor.person.photo;
+  newPerson.id = doctor.id;
+  return newPerson;
+}
 
 
 router.get('/', async (req, res) => {
@@ -40,6 +135,9 @@ router.put( "/:id", function(req, res){
       }
     }).then( (result) => res.json(result) )}
   );
+
+
+
 router.delete("/:id",(req,res)=>{    
     Doctor.destroy({
       where: {
@@ -59,6 +157,8 @@ router.get('/byJobId/:id', async (req, res) => {
   });
   res.status(201).send(doctors);
 });
+
+
 router.get('/byPersonId/:id', async (req, res) => {
   const id=req.params.id;
   if(!id) return res.sendStatus(400);
@@ -69,7 +169,9 @@ router.get('/byPersonId/:id', async (req, res) => {
       include: [Person, JobTiltle],
       
   });
-  res.status(201).send(doctors);
+  res.status(201).json(doctors[0]);
 });
+
+
 
 module.exports = router;
