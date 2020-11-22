@@ -118,12 +118,41 @@ router.post("/", async function (req, res) {
                       res.status(201).send(res.json(result));
     }).catch(err=>console.log(err));
 });
+
+
+/**
+*  @swagger
+*  /doctors/{id}:
+*    get:
+*      tags:
+*      - "Doctor"
+*      summary: Get doctor by id
+*      description: Return an existed doctor
+*      security:
+*        - bearerAuth: []
+*      parameters:
+*      - in: path
+*        name: id
+*        required: true
+*        schema:
+*          type: integer
+*          minimum: 1
+*        description: Doctor's id
+*        example: 1
+*
+*      responses:
+*        400:
+*          description: No doctor with such id
+*
+*
+*/
 router.get( "/:id", async function(req, res){
     if(!req.params.id)return res.sendStatus(200);    
-    Doctor.findByPk(req.params.id,{include: [Person, JobTiltle]}).then( (result) => res.json(result))
+    Doctor.findByPk(req.params.id,{include: [Person, JobTiltle, Hospital]}).then( (result) => res.json(result))
  } );
 
-router.put( "/:id", function(req, res){  
+
+ router.put( "/:id", function(req, res){  
     console.log(req.params.id) ;
     Doctor.update({
         //personId:personId,

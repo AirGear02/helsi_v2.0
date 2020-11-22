@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../config/database');
 const Person = require('./Person');
 const Schedule = require('./Schedule');
+const WorkPlace = require('./WorkPlace');
 
 
 const TimeSlot = db.define('timeSlot', {
@@ -26,6 +27,7 @@ const TimeSlot = db.define('timeSlot', {
 
 TimeSlot.belongsTo(Schedule);
 Schedule.hasMany(TimeSlot);
+
 TimeSlot.belongsTo(Person);
 Person.hasMany(TimeSlot);
 

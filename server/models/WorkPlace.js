@@ -9,12 +9,12 @@ const WorkPlace = db.define('workPlace', {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
-    }, 
+    },
     cabinet_number: {
         type: Sequelize.INTEGER
     }
-   
-}, { timestamps: false, underscored: true});
+
+}, { timestamps: false, underscored: true });
 
 WorkPlace.belongsTo(Hospital);
 Hospital.hasMany(WorkPlace);
@@ -22,6 +22,6 @@ Hospital.hasMany(WorkPlace);
 WorkPlace.belongsTo(Doctor);
 Doctor.hasMany(WorkPlace);
 
-Doctor.belongsToMany(Hospital, {through: WorkPlace})
+Doctor.belongsToMany(Hospital, { through: WorkPlace })
 
 module.exports = WorkPlace;

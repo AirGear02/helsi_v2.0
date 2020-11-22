@@ -19,8 +19,9 @@ app.use(cors());
 app.use('/jobs', require('./routes/jobs'));
 app.use('/addresses', require('./routes/addresses'));
 app.use('/persons', require('./routes/persons'));
-app.use('/work_places', require('./routes/workPlaces'));
 app.use('/doctors', require('./routes/doctors'));
+app.use('/doctors', require('./routes/workPlaces'));
+
 app.use('/hospitals', require('./routes/hospitals'));
 app.use('/schedules', require('./routes/schedules'));
 app.use('/time_slots', require('./routes/timeSlots'));

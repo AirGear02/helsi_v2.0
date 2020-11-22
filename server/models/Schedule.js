@@ -10,17 +10,18 @@ const Schedule = db.define('schedule', {
         primaryKey: true
     },
     start_time: {
-        type: Sequelize.TIME,
+        type: Sequelize.TIME
     },
     end_time: {
         type: Sequelize.TIME,
     },
     day_of_week: {
         type: Sequelize.ENUM('Monday', 'Tuesday', 'Wedndesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+    },
+    slot_duration: {
+        type: Sequelize.DataTypes.TIME
     }
 
-
-   
 }, { timestamps: false, underscored: true});
 
 Schedule.belongsTo(WorkPlace);

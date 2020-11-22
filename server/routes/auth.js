@@ -83,7 +83,7 @@ router.post('/login', upload.none(), async (req, res) => {
     }
 
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'});
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '30d'});
 
     await Sequelize.query('INSERT INTO tokens VALUES($token)', {
         type: QueryTypes.INSERT, 
