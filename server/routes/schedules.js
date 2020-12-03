@@ -1,6 +1,7 @@
 const express = require('express');
 const WorkPlace = require('../models/WorkPlace');
 const Schedule = require('../models/Schedule');
+const moment = require('moment');
 
 const router = express.Router();
 
@@ -32,11 +33,11 @@ router.get('/', async (req, res) => {
  *                      type: string
  *                      description: Start time
  *                      example: 09:00
-  *                   end_time:
+ *                   end_time:
  *                      type: string
  *                      description: End time
  *                      example: 13:00
-  *                   workPlaceId:
+ *                   workPlaceId:
  *                      type: int
  *                      description: Foreign key to work place id
  *                      example: 1
@@ -77,18 +78,9 @@ router.post("/", upload.none(), async function (req, res) {
 router.get("/:id", async  (req, res) => {
   if (!req.params.id) return res.sendStatus(200);
   const schedule = await Schedule.findByPk(req.params.id, { include: [WorkPlace] });
-  const date = parseTime(schedule.start_time);
-  //date.minutes = date.minutes + schedule.slot_duration.minutes;
-  res.status(200).json({result: `${date.getHours()}:${date.getMinutes()}`})
+  res.status(200).json(schedule);
 });
 
-function parseTime(t) {
-  var d = new Date();
-  var time = t.match(/(\d+)(?::(\d\d))?\s*(p?)/);
-  d.setHours(parseInt(time[1]) + (time[3] ? 12 : 0));
-  d.setMinutes(parseInt(time[2]) || 0);
-  return d;
-}
 
 router.put("/:id", (req, res) =>
   Schedule.update({

@@ -6,7 +6,7 @@ import AssignmentIndRoundedIcon from '@material-ui/icons/AssignmentIndRounded';
 
 const useStyles = makeStyles({
     infoContainer: {
-        width: '400px'
+        width: '350px'
     },
 
     info: {

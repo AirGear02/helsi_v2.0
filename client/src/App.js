@@ -1,5 +1,7 @@
 import Header from './components/header/header';
 import Footer from './components/footer/footer';
+import UserCabinet from './components/user-cabinet/userCabinet';
+import DoctorCabinet from './components/doctor-cabinet/doctorCabinet';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import SearchingForm from './components/searching-form/searchingForm';
 import {makeStyles} from '@material-ui/core';
@@ -30,7 +32,10 @@ function App() {
             <Schedule />
           </Route>
           <Route path="/cabinet">
-            <h1>Cabinet</h1>
+            <UserCabinet />
+          </Route>
+          <Route path="/doctor_cabinet">
+            <DoctorCabinet />
           </Route>
           <Route exact path="/">
             <SearchingForm />

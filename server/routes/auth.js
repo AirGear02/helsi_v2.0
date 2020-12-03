@@ -6,6 +6,7 @@ const multer = require('multer');
 const upload = multer();
 
 const Person = require('../models/Person');
+const Doctor = require('../models/Doctor');
 const validateLogin = require('../validation/auth/login');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -68,7 +69,7 @@ router.post('/login', upload.none(), async (req, res) => {
 
     const person = await Person.findOne({where: {
         [Op. or] : [{email: value.login}, {phone_number: value.login}]
-    }});
+    }, include: [Doctor]});
     
     if(person === null) return res.status(400).json({message: 'Немає користувача з такими даними'});
 
@@ -80,6 +81,10 @@ router.post('/login', upload.none(), async (req, res) => {
         first_name: person.first_name, 
         last_name: person.last_name, 
         role: person.role
+    }
+
+    if(person.doctor !== null) {
+        user.doctorId = person.doctor.id;
     }
 
     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'});
@@ -167,6 +172,7 @@ router.post('/refreshToken', upload.none(), async (req, res) => {
             last_name: person.last_name, 
             role: person.role
         }
+        if(decoded.doctorId !== null) user.doctorId = decoded.doctorId;
         const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'});
         return res.status(200).json({token: accessToken});
     });

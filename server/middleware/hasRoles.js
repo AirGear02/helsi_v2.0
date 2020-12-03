@@ -9,7 +9,7 @@ module.exports = (roles) => (req, res, next) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if(err) return res.status(400).json({message: "Invalid auth token"});
-
+        
         if(!roles.includes(user.role)) return res.status(403).json({message: 'You don\'t have premissions'});
         req.body.user = user;
         next();

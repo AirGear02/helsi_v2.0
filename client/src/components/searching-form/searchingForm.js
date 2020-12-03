@@ -123,7 +123,7 @@ export default function SearchingForm() {
             </FormControl>
             {doctors.length !== 0 && <div className={classes.doctorsContainer}>
                 {renderDoctors()}
-                <Button className={classes.nextPageButton}>Завантажити ще {ITEMS_PER_PAGE}</Button>
+                
             </div>
             }
         </div>

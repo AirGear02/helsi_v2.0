@@ -2,8 +2,15 @@ const express = require('express');
 const WorkPlace = require('../models/WorkPlace');
 const Hospital = require('../models/Hospital');
 const Doctor = require('../models/Doctor');
+const Schedule = require('../models/Schedule');
+const moment = require('moment');
+
+const TimeSlotHelper = require('../utils/time-slots/timeSlotsHelper');
 
 const multer = require('multer');
+const TimeSlot = require('../models/TimeSlot');
+const { Sequelize } = require('sequelize');
+const { response } = require('express');
 const upload = multer();
 
 const router = express.Router();
@@ -15,50 +22,65 @@ router.get('/', async (req, res) => {
 });
 
 
+
+
+
 /**
  *  @swagger
- *  /doctors/{doctor_id}/work_places:
- *    post:
+ *  /work_places/{work_place_id}/time_slots:
+ *    get:
  *      tags:
  *      - "Work place"
- *      summary: Create new work place
- *      description: Creates a doctor's work place
+ *      summary: Get time slots by work place
+ *      description: Get time slots by work place
  *      parameters:
  *      - in: path
- *        name: doctor_id
+ *        name: work_place_id
  *        required: true
  *        schema:
  *          type: integer
  *          minimum: 1
- *        description: Doctor's id
+ *        description: Work place's id
  *        example: 1
- *      requestBody:
- *        content:
- *          multipart/form-data:
- *            schema:
- *              type: object
- *              required:
- *                hospitalId, cabinet_number
- *              properties:
- *                   hospitalId:
- *                      type: int
- *                      description: Foreign key to hospitalId
- *                      example: 1
- *                   cabinet_number:
- *                      type: int
- *                      description: cabinet number
- *                      example: 1
+ *      - in: query
+ *        name: date
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: Time slots date
+ *        example: 2020.11.23
  *      responses:
- *        201:
- *          description: Work place successfully created
+ *        200:
+ *          description: Time slots successfully found
  *
  *
  */
-router.post("/:doctor_id/work_places", upload.none(), async (req, res) => {
-  if (!req.body) return res.sendStatus(400);
-  req.body.doctorId = req.params.doctor_id;
-  const workPlace = await WorkPlace.create(req.body);
-  res.status(201).json({message: 'Work place is successfully created', workPlace: workPlace});
+router.get("/:work_place_id/time_slots", upload.none(), async (req, res) => {
+  const date = moment(req.query.date, 'YYYY-MM-DD');
+  const schedule = await Schedule.findOne({
+    where: {
+      workPlaceId: req.params.work_place_id,
+      day_of_week: date.format('dddd'),
+    },
+  });
+
+  if(schedule === null) {
+    return res.status(404).json({message: 'No schedules'});
+  }
+
+  const timeSlots = await TimeSlot.findAll({
+    where: {
+      scheduleId: schedule.id,
+      date_visiting: { [Sequelize.Op.eq]: date.format('YYYY-MM-DD') }
+    }
+  });
+
+  const orderedSlots = TimeSlotHelper.formatOrderedTimeSlots(timeSlots);
+  const freeSlots = TimeSlotHelper.getFreeTimeSlots(schedule.start_time,
+    schedule.end_time, schedule.slot_duration.minutes, orderedSlots, date);
+
+  res.status(200).json({ bookedHours: orderedSlots, freeHours: freeSlots, scheduleId: schedule.id });
+
 });
 
 
