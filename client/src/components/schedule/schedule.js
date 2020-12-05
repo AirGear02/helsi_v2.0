@@ -11,6 +11,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { openForm } from '../../actions/loginForm';
+import moment from 'moment';
 
 
 function Alert(props) {
@@ -150,7 +151,6 @@ export default function Schedule(props) {
         const union_hours = [...data.freeHours, ...data.bookedHours];
         setTitles(generateTitles(data));
         union_hours.sort();
-        console.log(union_hours);
         setHours(union_hours);
     }
 
@@ -195,10 +195,13 @@ export default function Schedule(props) {
             return;
         }
 
+        
+        const end_time = moment(value, 'HH:mm').add(data.slot_duration, 'minute').format('HH:mm');
         axios.post('/time_slots', {
             start_time: value,
             date_visiting: date,
-            scheduleId: data.scheduleId
+            scheduleId: data.scheduleId,
+            end_time: end_time
         }, {headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }})
         .then(response => {
             

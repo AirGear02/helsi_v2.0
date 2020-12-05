@@ -4,6 +4,7 @@ const { Sequelize } = require('sequelize');
 const Person = require('../models/Person');
 const Schedule = require('../models/Schedule');
 const TimeSlot = require('../models/TimeSlot');
+const moment = require('moment');
 
 const sequelize = require('../config/database');
 const { putToTimeRange } = require('./timeslot');
@@ -12,27 +13,20 @@ const { getScheduleById, getScheduleFree } = require('../database.js/schedules')
 
 const router = express.Router();
 async function scheduleKeepsStartEnd(schedule_id,st_time, e_time){
-    let scheduleRes=await getScheduleById(schedule_id).then(result=>result);
-    let currentDate=new Date();
-    //console.log("KKK",scheduleRes,"KKK");   
-    let schedule_start=fromStringToTime(scheduleRes[0].start_time,currentDate);    
-    let schedule_end=fromStringToTime(scheduleRes[0].end_time,currentDate);
-    let start=fromStringToTime(st_time,currentDate);
-    let end=fromStringToTime(e_time,currentDate); 
-    let res;  
-    if(schedule_start<=start&&schedule_end>=end){
-        res=true;
-    }
-    else{
-        res=false;
-    }
-    return res;
+    let scheduleRes=await getScheduleById(schedule_id).then(result=>result);  
+    let schedule_start=moment(scheduleRes[0].start_time, 'HH:mm:SS');    
+    let schedule_end=moment(scheduleRes[0].end_time, 'HH:mm:SS');
+    let start=moment(st_time, 'HH:mm');
+    let end=moment(e_time, 'HH:mm'); 
+   
+    return schedule_start<=start && schedule_end>=end;
+   
     
 }
 function fromStringToTime(timeString,current_date){
     let timeArr=timeString.split(':'); 
     let date=new Date(current_date.getTime());   
-    date.setHours(timeArr[0],timeArr[1],timeArr[2]);
+    date.setHours(timeArr[0],timeArr[1], timeArr[2]);
     return date.getTime();
 }
 async function checkScheduleFree(schedule_id,dat_visiting,start_time,end_time){

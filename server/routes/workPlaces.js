@@ -79,7 +79,8 @@ router.get("/:work_place_id/time_slots", upload.none(), async (req, res) => {
   const freeSlots = TimeSlotHelper.getFreeTimeSlots(schedule.start_time,
     schedule.end_time, schedule.slot_duration.minutes, orderedSlots, date);
 
-  res.status(200).json({ bookedHours: orderedSlots, freeHours: freeSlots, scheduleId: schedule.id });
+  res.status(200).json({ bookedHours: orderedSlots, freeHours: freeSlots, scheduleId: schedule.id, 
+    slot_duration: schedule.slot_duration.minutes});
 
 });
 

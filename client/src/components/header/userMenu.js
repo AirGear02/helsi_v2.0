@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { makeStyles, Typography, IconButton, MenuItem, Menu, Avatar, withStyles, ListItemIcon, ListItemText } from '@material-ui/core';
+import { makeStyles, Typography, IconButton, MenuItem, Menu, Avatar, withStyles, ListItemIcon, ListItemText, useRadioGroup } from '@material-ui/core';
 import axios from 'axios';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
@@ -90,7 +90,7 @@ export default function UserMenu() {
         else setPhotoUrl('');
       });
 
-  }, []);
+  }, [user]);
 
   const renderUserCabinet = () => {
     if (user.role === 'User') {
