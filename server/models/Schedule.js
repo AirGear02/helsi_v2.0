@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../config/database');
 const WorkPlace = require('./WorkPlace');
+const Doctor = require('./Doctor');
+const Hospital = require('./Hospital');
 
 
 const Schedule = db.define('schedule', {

@@ -1,10 +1,12 @@
-import { React, useState } from 'react';
+import { React} from 'react';
 import { AppBar, Typography, makeStyles, Button, List, ListItem } from '@material-ui/core';
 import LoginForm  from './loginForm';
-import authorize from '../../utils/auth';
 import UserMenu from './userMenu';
+import { useSelector, useDispatch } from 'react-redux'
 
 import {Link} from 'react-router-dom';
+import { openForm } from '../../actions/loginForm';
+
 
 const useStyles = makeStyles({
     header: {
@@ -56,26 +58,16 @@ const useStyles = makeStyles({
 
 });
 
-export default function Header() {
-    
-    const [isLoginShowed, setIsLoginShowed] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(authorize());
+export function Header() {
+    const isLoggedIn  = useSelector(store => store.user.isLoggedIn);
+    const dispatch = useDispatch();
     const classes = useStyles();
 
-    const handleLogin = () =>  {
-        setIsLoginShowed(true)
-    }
+    const handleLogin = () =>  dispatch(openForm());
 
-    const handleLogingIn = () => setIsLoggedIn(true);
-
-    const handleClose = () => {
-        setIsLoginShowed(false);
-    }
-
-    const handleLogout = () => setIsLoggedIn(false);
 
     const renderUserMenu =  () => {
-        if(isLoggedIn) return <UserMenu handleLogoutMenu = {handleLogout}/>;
+        if(isLoggedIn) return <UserMenu />;
         return  <Button className={classes.loginButton} variant='outlined' color="primary" onClick={handleLogin}>Увійти</Button>;
     }
     return(
@@ -97,9 +89,12 @@ export default function Header() {
 
                {renderUserMenu()}
             </nav>
-            <LoginForm isShowed={isLoginShowed} handleClose={handleClose} handleLogin={handleLogingIn}>
+            <LoginForm>
 
             </LoginForm>
         </AppBar>
     ) 
 }
+
+
+export default Header
