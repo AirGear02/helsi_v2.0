@@ -47,4 +47,6 @@ code {
     transition: background-color 0.5s;
 }
 
-
+.MuiPickersDatePickerRoot-toolbar h6{
+  display: none;
+}

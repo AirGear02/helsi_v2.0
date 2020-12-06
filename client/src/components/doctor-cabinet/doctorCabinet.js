@@ -80,7 +80,7 @@ export default function DoctorCabinet() {
             setCurrentWorkPlace(result.data.workPlaces[0].id);
         }
         if(isLoggedIn) fetchHospitals();
-    }, [isLoggedIn, user.doctorId]);
+    }, [isLoggedIn, user]);
 
     useEffect(() => {
         async function fetchTimeSlots() {

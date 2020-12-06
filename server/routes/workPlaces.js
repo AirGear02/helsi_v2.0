@@ -65,7 +65,7 @@ router.get("/:work_place_id/time_slots", upload.none(), async (req, res) => {
   });
 
   if(schedule === null) {
-    return res.status(404).json({message: 'No schedules'});
+    return res.status(200).json({bookedHours: [], freeHours: []});
   }
 
   const timeSlots = await TimeSlot.findAll({
@@ -79,6 +79,16 @@ router.get("/:work_place_id/time_slots", upload.none(), async (req, res) => {
   const freeSlots = TimeSlotHelper.getFreeTimeSlots(schedule.start_time,
     schedule.end_time, schedule.slot_duration.minutes, orderedSlots, date);
 
+  
+  for(let i=0; i<freeSlots.length; i++) {
+    if(date.isAfter()) break;
+    if(moment(freeSlots, 'HH:mm').hours() <= moment().hours()) {
+      orderedSlots.push(freeSlots[i]);
+      freeSlots.splice(i, 1);
+      --i;
+    }
+  }
+  orderedSlots.sort();
   res.status(200).json({ bookedHours: orderedSlots, freeHours: freeSlots, scheduleId: schedule.id, 
     slot_duration: schedule.slot_duration.minutes});
 

@@ -129,7 +129,7 @@ export default function UserMenu() {
       >
         {photoUrl === '' && <AccountCircle className={classes.photo} />}
         {photoUrl !== '' && <Avatar src={photoUrl} className={classes.photo} />}
-        <Typography>{user.first_name} {user.last_name}</Typography>
+        <Typography style={{whiteSpace: 'nowrap'}}>{user.first_name} {user.last_name}</Typography>
 
       </IconButton>
       <StyledMenu

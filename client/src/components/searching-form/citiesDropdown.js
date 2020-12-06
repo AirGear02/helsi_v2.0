@@ -32,9 +32,15 @@ export default function CitiesDropdown({handleChange}) {
             .then(res => setCities(res.data.cities));
     },[]);
 
+
+    useEffect(() => {
+        handleChange(value);
+    }, [value]);
+    
     const renderCities = () => cities.map((city, index) => <MenuItem value={city} key={index}>{city}</MenuItem>);
 
     const handleChangeValue = (event) => setValue(event.target.value);
+
 
     return (
         <FormControl>

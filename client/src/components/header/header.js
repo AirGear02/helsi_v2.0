@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import {Link} from 'react-router-dom';
 import { openForm } from '../../actions/loginForm';
+import logo from '../../static/images/logo.png';
 
 
 const useStyles = makeStyles({
@@ -25,6 +26,8 @@ const useStyles = makeStyles({
         textDecoration: 'none',
         width: 'fit-content',
         lineHeight: '100%',
+        display: 'flex',
+        alignItems: 'center'
     },
 
     loginButton: {
@@ -45,15 +48,28 @@ const useStyles = makeStyles({
     },
 
     listItem: {
-        width: 'fit-content',
+       
         textDecoration: 'none',
         color: 'white',
-        fontSize: 'medium'
+        fontSize: 'medium',
+        whiteSpace: 'nowrap',
+    },
+
+    first: {
+        textDecoration: 'none',
+        color: 'white',
+        fontSize: 'medium',
+        lineHeight: '10px',
+        whiteSpace: 'nowrap',
     },
     nav: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    logo: {
+        width: '6%',
+        marginRight: '20px'
     }
 
 });
@@ -72,14 +88,16 @@ export function Header() {
     }
     return(
         <AppBar position='static' className={classes.header}>
+            
             <Typography  variant='h6' className={classes.title} component={Link} to='/' color='inherit' textDecoration='inherit'>
+                <img src={logo} alt='Helsi' className={classes.logo}/>
                 H E L S I
             </Typography>
             <nav className={classes.nav}>
                 <List className={classes.list}>
-                    <ListItem component={Link} to='/' className={classes.listItem}
+                    <ListItem component={Link} to='/' className={classes.first}
                         color='inherit' textDecoration='inherit'>
-                        Пошук доктора
+                        Пошук лікаря
                     </ListItem>
                     <ListItem component={Link} to='/about' className={classes.listItem}
                         color='inherit' textDecoration='inherit'>

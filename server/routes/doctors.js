@@ -23,10 +23,15 @@ router.get('/name/', async function (req, res) {
   const words = req.query.name.split(/[\s.,-;]+/)
     .map(word => `%${word}%`)
     .filter(word => word.length > 2);
-
+  const options = { model: Hospital };
+  let addOptions = {};
+  if (req.query.city !== undefined && req.query.city !== '') {
+    options.include = [{ model: Address, where: { city_village: req.query.city } }]
+    addOptions = { '$hospitals->address.id$': { [Sequelize.Op.ne]: null } }
+  }
   const operator = words.length > 2 ? Sequelize.Op.and : Sequelize.Op.or
   const persons = await Doctor.findAll({
-    include: [Person, Hospital, JobTiltle],
+    include: [Person, options, JobTiltle],
     order: [['id', 'DESC']],
     where: {
       [operator]: {
@@ -44,8 +49,10 @@ router.get('/name/', async function (req, res) {
           [Sequelize.Op.or]: {
             [Sequelize.Op.iLike]: { [Sequelize.Op.any]: words }
           }
-        }
-      }
+        },
+
+      },
+      ...addOptions
 
     }
   });
@@ -60,14 +67,21 @@ router.get('/hospital/', async function (req, res) {
   if (req.query.hospital === undefined) return res.status(400).json({ message: 'Please input your name' });
 
   const hosp_name = `%${req.query.hospital}%`;
-
+  const options = { model: Hospital };
+  let addOptions = {};
+  if (req.query.city !== undefined && req.query.city !== '') {
+    options.include = [{ model: Address, where: { city_village: req.query.city } }]
+    addOptions = { '$hospitals->address.id$': { [Sequelize.Op.ne]: null } }
+  }
   const persons = await Doctor.findAll({
-    include: [Person, Hospital, JobTiltle],
+    include: [Person, options, JobTiltle],
     where: {
       '$hospitals.name_hosp$': {
         [Sequelize.Op.iLike]: hosp_name
-      }
+      },
+      ...addOptions
     },
+
   }
   );
   res.status(200).json(persons.map(person => minimizeDoctor(person)));
@@ -80,13 +94,19 @@ router.get('/job/', async function (req, res) {
   if (req.query.job === undefined) return res.status(400).json({ message: 'Please input your name' });
 
   const hosp_name = `%${req.query.job}%`;
-
+  const options = { model: Hospital };
+  let addOptions = {};
+  if (req.query.city !== undefined && req.query.city !== '') {
+    options.include = [{ model: Address, where: { city_village: req.query.city } }]
+    addOptions = { '$hospitals->address.id$': { [Sequelize.Op.ne]: null } }
+  }
   const persons = await Doctor.findAll({
-    include: [Person, Hospital, JobTiltle],
+    include: [Person, options, JobTiltle],
     where: {
       '$job_title.title$': {
         [Sequelize.Op.iLike]: hosp_name
-      }
+      },
+      ...addOptions
     },
   }
   );
@@ -209,7 +229,7 @@ router.get('/time_slots', upload.none(), async (req, res) => {
 
       }
     ],
-    
+
   });
   return res.status(200).json(timeSlots.schedules[0].timeSlots);
 });

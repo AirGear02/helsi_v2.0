@@ -80,13 +80,14 @@ export default function SearchingForm() {
     const [searchType, setSearchType] = useState('name');
     const [searchQuery, setSearchQuery] = useState('');
     const [doctors, setDoctors] = useState([]);
-    const [currPage, setPage] = useState(1);
+    const [city, setCity] = useState('');
 
     const handleSearchTypeChange = event => setSearchType(event.target.value);
     const handleQueryChange = event => setSearchQuery(event.target.value);
 
     const searchHandle = () => {
-        axios.get(`/doctors/${searchType}/?${searchType}=${searchQuery}`)
+        console.log(city);
+        axios.get(`/doctors/${searchType}/?${searchType}=${searchQuery}&city=${city}`)
         .then(res => setDoctors(res.data));
     }
 
@@ -102,7 +103,7 @@ export default function SearchingForm() {
         <div className={classes.form}>
             <div className={classes.searchContainer}>
                 <SearchingField handleChange={handleQueryChange}/>
-                <CitiesDropdown />
+                <CitiesDropdown handleChange={(value) => setCity(value)}/>
                 <Button className={classes.button} variant="outlined" onClick={searchHandle}>Знайти</Button>
             </div>
             <Divider classes={{root: classes.dividerColor}}/>

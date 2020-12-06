@@ -12,6 +12,8 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { openForm } from '../../actions/loginForm';
 import moment from 'moment';
+import DoctorCard from './doctor-card';
+import DatePicker from './date-picker';
 
 
 function Alert(props) {
@@ -96,6 +98,14 @@ const useStyles = makeStyles({
         borderColor: 'white',
         border: '2px solid white',
         borderRadius: '10px'
+    },
+    root: {
+        display: 'flex'
+    },
+    message: {
+        color: 'white',
+        fontWeight: 'bold',
+        marginTop: '5vh'
     }
 
 });
@@ -115,10 +125,10 @@ export default function Schedule(props) {
     const classes = useStyles();
     const { doctorId } = useParams();
 
-    const [doctor, setDoctor] = useState({ workPlaces: [] });
+    const [doctor, setDoctor] = useState({hospitals: [],  workPlaces: [] });
     const [titles, setTitles] = useState([]);
     const [hours, setHours] = useState([]);
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(null);
     const [value, setValue] = useState('');
     const [date, setDate] = useState(new Date().toISOString().slice(0,10));
     const [hospital, setHospital] = useState(0);
@@ -132,12 +142,14 @@ export default function Schedule(props) {
             .then(res => {
 
                 setDoctor(res.data);
+                console.log(res.data);
                 setHospital(res.data.workPlaces[0].id);
             });
 
-    }, []);
+    }, [doctorId]);
 
     useEffect(() => {
+        setValue('');
         axios.get(`/work_places/${hospital}/time_slots/?date=${date}`)
             .then(res => {
                 setAllData(res.data);
@@ -222,16 +234,35 @@ export default function Schedule(props) {
         setIsMessageOpen(false);
     };
 
-    return (
-        <div>
-            <div>
+    const renderSchedule = () => {
+        if(data.bookedHours.length === 0 &&  data.freeHours.length === 0) {
+            return (
+            <div className={classes.contentContainer}>
+                <Typography className={classes.message}>На жаль, лікар не працює в цей день</Typography>
+            </div> 
+            )
+        }
 
+        return (
+            <div className={classes.contentContainer}>
+                <div>
+                    {renderTitles()}
+                </div>
+                <div className={classes.hoursContainer}>
+                    {titles.map(title => renderSlots(title))}
+                </div>
             </div>
+        )
+    }
+
+    const handleChangeDate = (value) => setDate(value.format('YYYY-MM-DD'))
+
+    return (
+        <div className={classes.root}>
+            <DoctorCard doctor={doctor}/>
             <div className={classes.main}>
                 <div className={classes.picker}>
-                    <input type="date" value={date} 
-                        onChange={(e) => setDate(new Date(e.target.value).toISOString().slice(0, 10))} 
-                        className={classes.datePicker}></input>
+                    <DatePicker handleSubmit={handleChangeDate}/>
                     <FormControl>
                         <InputLabel id="hospital-label" className={classes.whiteColor}>Поліклініка</InputLabel>
                         <Select
@@ -252,18 +283,11 @@ export default function Schedule(props) {
 
 
                 </div>
-                <div className={classes.contentContainer}>
-                    <div>
-                        {renderTitles()}
-                    </div>
-                    <div className={classes.hoursContainer}>
-                        {titles.map(title => renderSlots(title))}
-                    </div>
-                </div>
+                {data!== null && renderSchedule()}
                 {value !== '' && <Button className={classes.button} onClick={handleSubmit}>Записатися</Button>}
             </div>
             <Snackbar open={isMessageOpen} autoHideDuration={6000} onClose={handleClose}>
-                <Alert severity="success">Вітаємо, Ви успішно щаписались до лікаря!</Alert>
+                <Alert severity="success">Вітаємо, Ви успішно записались до лікаря!</Alert>
             </Snackbar>
         </div>
 
