@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 
 /**
  *  @swagger
- *  /work_places/{work_place_id}/time_slots:
+ *  /api/v1/work_places/{work_place_id}/time_slots:
  *    get:
  *      tags:
  *      - "Work place"

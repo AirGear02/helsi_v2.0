@@ -18,7 +18,7 @@ require('dotenv').config();
 
 /**
  *  @swagger
- *  /auth/login:
+ *  /api/v1/auth/login:
  *    post:
  *      tags:
  *      - "Auth"
@@ -103,7 +103,7 @@ router.post('/login', upload.none(), async (req, res) => {
 
 /**
  *  @swagger
- *  /auth/refreshToken:
+ *  /api/v1/auth/refreshToken:
  *    post:
  *      tags:
  *      - "Auth"
@@ -181,7 +181,7 @@ router.post('/refreshToken', upload.none(), async (req, res) => {
 
 /**
  *  @swagger
- *  /auth/logout:
+ *  /api/v1/auth/logout:
  *    post:
  *      tags:
  *      - "Auth"

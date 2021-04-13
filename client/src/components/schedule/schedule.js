@@ -134,6 +134,7 @@ export default function Schedule(props) {
     const [hospital, setHospital] = useState(0);
     const isLoggedIn = useSelector(store => store.user.isLoggedIn);
     const [isMessageOpen, setIsMessageOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const dispatch = useDispatch();
 
@@ -223,7 +224,10 @@ export default function Schedule(props) {
             setAllData(newData);
             setValue('');
             setIsMessageOpen(true);
-        });
+        })
+        .catch(error => {
+            setErrorMessage(error.response.data.message)
+        })
     }
 
     const handleClose = (event, reason) => {
@@ -233,6 +237,14 @@ export default function Schedule(props) {
 
         setIsMessageOpen(false);
     };
+
+    const handleCloseError = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setErrorMessage('');
+    }
 
     const renderSchedule = () => {
         if(data.bookedHours.length === 0 &&  data.freeHours.length === 0) {
@@ -289,6 +301,12 @@ export default function Schedule(props) {
             <Snackbar open={isMessageOpen} autoHideDuration={6000} onClose={handleClose}>
                 <Alert severity="success">Вітаємо, Ви успішно записались до лікаря!</Alert>
             </Snackbar>
+            <Snackbar open={errorMessage !== ''} autoHideDuration={6000} onClose={handleCloseError}>
+                <Alert onClose={handleCloseError} severity="error">
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
+
         </div>
 
     )

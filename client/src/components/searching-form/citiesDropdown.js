@@ -1,8 +1,8 @@
-import { React, useState, useEffect} from 'react';
-import {FormControl, InputLabel, MenuItem, FormHelperText, Select, makeStyles} from '@material-ui/core';
+import { React, useState, useEffect } from 'react';
+import { FormControl, InputLabel, MenuItem, FormHelperText, Select, makeStyles } from '@material-ui/core';
 import axios from 'axios';
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://helsi-289508.nw.r.appspot.com/api/v1";
 
 const useStyles = makeStyles({
     whiteColor: {
@@ -22,21 +22,21 @@ const useStyles = makeStyles({
 
 });
 
-export default function CitiesDropdown({handleChange}) {
+export default function CitiesDropdown({ handleChange }) {
     const classes = useStyles();
     const [cities, setCities] = useState([]);
     const [value, setValue] = useState('');
-    
+
     useEffect(() => {
         axios.get('/addresses/cities')
             .then(res => setCities(res.data.cities));
-    },[]);
+    }, []);
 
 
     useEffect(() => {
         handleChange(value);
     }, [value]);
-    
+
     const renderCities = () => cities.map((city, index) => <MenuItem value={city} key={index}>{city}</MenuItem>);
 
     const handleChangeValue = (event) => setValue(event.target.value);
@@ -48,22 +48,22 @@ export default function CitiesDropdown({handleChange}) {
             <Select
                 labelId="city-label"
                 id="city-label-select"
-                value = {value}
+                value={value}
                 onChange={handleChangeValue}
                 className={classes.select}
                 classes={{
-                    
-                        icon: classes.icon,
-                        root: classes.whiteColor
+
+                    icon: classes.icon,
+                    root: classes.whiteColor
                 }}
             >
-            <MenuItem value=''>
-            <em>None</em>
-          </MenuItem>
-                {cities.length!==0 && renderCities()}
+                <MenuItem value=''>
+                    <em>None</em>
+                </MenuItem>
+                {cities.length !== 0 && renderCities()}
             </Select>
             <FormHelperText className={classes.whiteColor}>Місто, в якому шукаєте лікаря</FormHelperText>
-      </FormControl>
+        </FormControl>
     );
 }
 

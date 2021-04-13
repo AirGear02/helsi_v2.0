@@ -12,7 +12,7 @@ import BallotOutlinedIcon from '@material-ui/icons/BallotOutlined';
 import { logout } from '../../actions/auth';
 
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://helsi-289508.nw.r.appspot.com/api/v1";
 
 const useStyles = makeStyles({
 
@@ -106,7 +106,7 @@ export default function UserMenu() {
   }
 
   const renderDoctorCabinet = () => {
-    if(user.role === 'Doctor') {
+    if (user.role === 'Doctor') {
       return (
         <StyledMenuItem component={Link} onClick={handleClose} to="/doctor_cabinet">
           <ListItemIcon>
@@ -129,7 +129,7 @@ export default function UserMenu() {
       >
         {photoUrl === '' && <AccountCircle className={classes.photo} />}
         {photoUrl !== '' && <Avatar src={photoUrl} className={classes.photo} />}
-        <Typography style={{whiteSpace: 'nowrap'}}>{user.first_name} {user.last_name}</Typography>
+        <Typography style={{ whiteSpace: 'nowrap' }}>{user.first_name} {user.last_name}</Typography>
 
       </IconButton>
       <StyledMenu

@@ -1,7 +1,7 @@
 import jwt_decode from 'jwt-decode';
 import axios from 'axios';
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://helsi-289508.nw.r.appspot.com/api/v1";
 
 
 const checkIsTokenExpired = token => {

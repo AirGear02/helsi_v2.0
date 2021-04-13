@@ -1,11 +1,11 @@
-import {React, useState} from 'react';
-import {makeStyles, Button, FormControl, RadioGroup, FormControlLabel, Radio, Typography, Divider} from '@material-ui/core';
+import { React, useState } from 'react';
+import { makeStyles, Button, FormControl, RadioGroup, FormControlLabel, Radio, Typography, Divider } from '@material-ui/core';
 import SearchingField from './searchingField';
 import CitiesDropdown from './citiesDropdown';
 import axios from 'axios';
 import DoctorCard from './doctorCard';
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://helsi-289508.nw.r.appspot.com/api/v1";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -46,7 +46,7 @@ const useStyles = makeStyles({
         alignItems: 'center',
         marginRight: '10%',
         color: 'white'
-    }, 
+    },
     dividerColor: {
         background: '#fff'
     },
@@ -56,7 +56,7 @@ const useStyles = makeStyles({
             color: '#fff'
         }
     },
-    label:{
+    label: {
         color: '#fff'
     },
     checked: {},
@@ -88,7 +88,7 @@ export default function SearchingForm() {
     const searchHandle = () => {
         console.log(city);
         axios.get(`/doctors/${searchType}/?${searchType}=${searchQuery}&city=${city}`)
-        .then(res => setDoctors(res.data));
+            .then(res => setDoctors(res.data));
     }
 
     const renderDoctors = () => {
@@ -102,29 +102,29 @@ export default function SearchingForm() {
     return (
         <div className={classes.form}>
             <div className={classes.searchContainer}>
-                <SearchingField handleChange={handleQueryChange}/>
-                <CitiesDropdown handleChange={(value) => setCity(value)}/>
+                <SearchingField handleChange={handleQueryChange} />
+                <CitiesDropdown handleChange={(value) => setCity(value)} />
                 <Button className={classes.button} variant="outlined" onClick={searchHandle}>Знайти</Button>
             </div>
-            <Divider classes={{root: classes.dividerColor}}/>
+            <Divider classes={{ root: classes.dividerColor }} />
             <FormControl component="fieldset" className={classes.typeForm}>
                 <Typography variant="subtitle1" className={classes.title}>Пошук за:</Typography>
-                <RadioGroup aria-label="search-type" name="searchType" 
-                    value={searchType} 
+                <RadioGroup aria-label="search-type" name="searchType"
+                    value={searchType}
                     onChange={handleSearchTypeChange}
                     className={classes.raadioGroup}
                 >
                     <FormControlLabel value="name" className={classes.label}
-                        control={<Radio classes={{root: classes.radio, checked: classes.checked}}/>} label="Ім'ям" />
+                        control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />} label="Ім'ям" />
                     <FormControlLabel value="job" className={classes.label}
-                        control={<Radio classes={{root: classes.radio, checked: classes.checked}}/>} label="Спеціальністю" />
+                        control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />} label="Спеціальністю" />
                     <FormControlLabel value="hospital" className={classes.label}
-                        control={<Radio classes={{root: classes.radio, checked: classes.checked}}/>} label="Назвою закладу" />
+                        control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />} label="Назвою закладу" />
                 </RadioGroup>
             </FormControl>
             {doctors.length !== 0 && <div className={classes.doctorsContainer}>
                 {renderDoctors()}
-                
+
             </div>
             }
         </div>

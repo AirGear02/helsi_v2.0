@@ -40,7 +40,7 @@ const SALT_ROUND = 10;
 
 /**
  *  @swagger
- *  /persons/:
+ *  /api/v1/persons/:
  *    post:
  *      tags:
  *      - "Person"
@@ -146,7 +146,7 @@ router.get('/name/', async function (req, res) {
 
 /**
 *  @swagger
-*  /persons/time_slots:
+*  /api/v1/persons/time_slots:
 *    get:
 *      tags:
 *      - "Person"
@@ -191,7 +191,7 @@ router.get('/time_slots', upload.none(), hasRoles(['User', 'Admin']), async (req
 
 /**
 *  @swagger
-*  /persons/photo:
+*  /api/v1/persons/photo:
 *    get:
 *      tags:
 *      - "Person"
@@ -221,7 +221,7 @@ router.get("/photo", upload.none(), hasRoles(['Admin', 'User', 'Doctor']), async
 
 /**
 *  @swagger
-*  /persons/{id}:
+*  /api/v1/persons/{id}:
 *    get:
 *      tags:
 *      - "Person"
@@ -260,7 +260,7 @@ router.get("/:id", upload.single('photo'), hasRoles(["Admin", "User"]), async (r
 
 /**
  *  @swagger
- *  /persons/{id}:
+ *  /api/v1/persons/{id}:
  *    put:
  *      tags:
  *      - "Person"
@@ -336,7 +336,7 @@ router.put("/:id", upload.single('photo'), personUpdate, async (req, res) => {
 
 /**
  *  @swagger
- *  /persons/{id}:
+ *  /api/v1/persons/{id}:
  *    delete:
  *      tags:
  *      - "Person"
@@ -396,7 +396,7 @@ router.get('/', async (req, res) => {
 
     include: [Address]
   });
-  res.status(201).send(persons);
+  res.status(201).send(persons).end();
 }
 )
 

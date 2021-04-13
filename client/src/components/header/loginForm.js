@@ -8,7 +8,7 @@ import { successLogin } from '../../actions/auth';
 import { closeForm } from '../../actions/loginForm';
 
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://helsi-289508.nw.r.appspot.com/api/v1";
 
 
 const useStyles = makeStyles((theme) => ({

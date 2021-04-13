@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 
 /**
  *  @swagger
- *  /time_slots/:
+ *  /api/v1/time_slots/:
  *    post:
  *      tags:
  *      - "Time slot"
@@ -91,17 +91,17 @@ router.post("/", upload.none(), hasRoles(['User']),  async (req, res) => {
   else {
     formError = {}
     if (!freePerson) {
-      formError.freePerson = "this person is busy";
+      formError.message = "Вм вже записані на цей час до іншого лікаря";
     }
     if (!freeSchedule) {
-      formError.freeSchedule = "this schedule is busy";
+      formError.message = "Цей час вже зайнятий";
     }
     if (!scheduleKeep) {
-      formError.scheduleKeep = "this schedule can not have such range of time";
+      formError.message = "Будь ласка, виберіть коректний час";
     }
 
     //console.log("error with data");
-    return res.status(409).send(JSON.stringify(formError));
+    return res.status(409).json(formError);
   }
 });
 

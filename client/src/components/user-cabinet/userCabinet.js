@@ -12,7 +12,7 @@ import TimeSlotCard from './timeSlotCard';
 import Divider from '@material-ui/core/Divider';
 
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://helsi-289508.nw.r.appspot.com/api/v1";
 
 
 function TabPanel(props) {
@@ -28,7 +28,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box>
-                   {children}
+                    {children}
                 </Box>
             )}
         </div>
@@ -113,7 +113,7 @@ export default function UserCabinet() {
                     aria-label="full width tabs example"
                     classes={{ indicator: classes.indicator }}
                 >
-                    <Tab label="Ваші записи" {...a11yProps(0)}   />
+                    <Tab label="Ваші записи" {...a11yProps(0)} />
                     <Tab label="Історія записів" {...a11yProps(1)} />
                 </Tabs>
             </AppBar>
@@ -124,13 +124,13 @@ export default function UserCabinet() {
             >
                 <TabPanel value={value} index={0} dir={theme.direction}>
                     <ul className={classes.list}>
-                    {data.future.map((slot, index) => (
-                        <li key={index}>
-                            {index !==0 && <Divider />}
-                            <TimeSlotCard {...slot}/>
-                            
-                        </li>
-                    ))}
+                        {data.future.map((slot, index) => (
+                            <li key={index}>
+                                {index !== 0 && <Divider />}
+                                <TimeSlotCard {...slot} />
+
+                            </li>
+                        ))}
                     </ul>
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>

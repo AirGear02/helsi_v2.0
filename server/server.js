@@ -16,16 +16,16 @@ app.use(cors());
 
 
 
-app.use('/jobs', require('./routes/jobs'));
-app.use('/addresses', require('./routes/addresses'));
-app.use('/persons', require('./routes/persons'));
-app.use('/doctors', require('./routes/doctors'));
-app.use('/work_places', require('./routes/workPlaces'));
+app.use('/api/v1/jobs', require('./routes/jobs'));
+app.use('/api/v1/addresses', require('./routes/addresses'));
+app.use('/api/v1/persons', require('./routes/persons'));
+app.use('/api/v1/doctors', require('./routes/doctors'));
+app.use('/api/v1/work_places', require('./routes/workPlaces'));
 
-app.use('/hospitals', require('./routes/hospitals'));
-app.use('/schedules', require('./routes/schedules'));
-app.use('/time_slots', require('./routes/timeSlots'));
-app.use('/auth', require('./routes/auth'));
+app.use('/api/v1/hospitals', require('./routes/hospitals'));
+app.use('/api/v1/schedules', require('./routes/schedules'));
+app.use('/api/v1/time_slots', require('./routes/timeSlots'));
+app.use('/api/v1/auth', require('./routes/auth'));
 
 
 

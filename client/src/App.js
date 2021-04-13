@@ -6,6 +6,7 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import SearchingForm from './components/searching-form/searchingForm';
 import {makeStyles} from '@material-ui/core';
 import Schedule from './components/schedule/schedule';
+import AboutPage from './components/about-page/about-page';
 
 const useStyles = makeStyles({
   main: {
@@ -26,7 +27,7 @@ function App() {
       <div className={classes.main}>
       <Switch>
           <Route path="/about">
-            <h1>About helsi</h1>
+            <AboutPage />
           </Route>
           <Route path="/schedule/:doctorId">
             <Schedule />

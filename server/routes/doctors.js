@@ -119,7 +119,7 @@ router.get('/job/', async function (req, res) {
 
 /**
  *  @swagger
- *  /doctors/{doctor_id}/work_places:
+ *  /api/v1/doctors/{doctor_id}/work_places:
  *    post:
  *      tags:
  *      - "Work place"
@@ -179,7 +179,7 @@ const minimizeDoctor = (doctor) => {
 
 /**
  *  @swagger
- *  /doctors/time_slots/:
+ *  /api/v1/doctors/time_slots/:
  *    get:
  *      tags:
  *      - "Doctor"
@@ -256,7 +256,7 @@ router.post("/", async function (req, res) {
 
 /**
 *  @swagger
-*  /doctors/{id}:
+*  /api/v1/doctors/{id}:
 *    get:
 *      tags:
 *      - "Doctor"
