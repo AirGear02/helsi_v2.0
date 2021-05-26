@@ -53,55 +53,54 @@ def run_tests():
     login_page = AuthTest(driver)
     login_page.open_login_popup()
 
-    login_page.login_as(INVALID_USER_EMAIL, INVALID_USER_PASSWORD)
-    assert login_page.is_login_failure()
-    print_test()
+    is_passed = login_page.is_login_failure() == True
+    print_test(is_passed)
 
     login_page.login_as(TEST_USER_EMAIL, TEST_USER_PASSWORD)
-    assert login_page.is_login_success()
-    print_test()
+    is_passed = login_page.is_login_success() == True
+    print_test(is_passed)
 
     # ----------------------------------------
     # search doctor tests
     search_page = SearchTest(driver)
 
     search_page.search_doctor(NOT_EXISTING_DOCTOR_NAME)
-    assert not search_page.are_doctors_found()
-    print_test()
+    is_passed = search_page.are_doctors_found() == False
+    print_test(is_passed)
 
     search_page.search_doctor(EXISTING_DOCTOR_NAME)
-    assert search_page.are_doctors_found()
-    print_test()
+    is_passed = search_page.are_doctors_found() == True
+    print_test(is_passed)
 
-    assert search_page.validate_doctors_name(EXISTING_DOCTOR_NAME)
-    print_test()
+    is_passed = search_page.validate_doctors_name(EXISTING_DOCTOR_NAME) == True
+    print_test(is_passed)
 
     search_page.open_appointments_page()
     # ----------------------------------------
     # search doctor tests
     appointment_test = AppointmentTest(driver)
 
-    assert appointment_test.is_appointment_page_opened()
-    print_test()
+    is_passed = appointment_test.is_appointment_page_opened() == True
+    print_test(is_passed)
 
     appointment_test.choose_free_timeslot()
-    assert appointment_test.is_free_slot_chosen()
-    print_test()
+    is_passed = appointment_test.is_free_slot_chosen() == True
+    print_test(is_passed)
 
     appointment_test.make_appointment()
-    assert appointment_test.check_if_appointment_success()
-    print_test()
+    is_passed = appointment_test.check_if_appointment_success() == True
+    print_test(is_passed)
 
     # ----------------------------------------
     # user cabinet test
     user_cabinet_test = UserCabinetTest(driver)
     user_cabinet_test.open_user_cabinet()
 
-    assert user_cabinet_test.is_page_opened()
-    print_test()
+    is_passed = user_cabinet_test.is_page_opened() == True
+    print_test(is_passed)
 
-    assert user_cabinet_test.has_appointments()
-    print_test()
+    is_passed = user_cabinet_test.has_appointments() == True
+    print_test(is_passed)
 
     print('All tests were passed successfully')
 
@@ -110,4 +109,5 @@ if __name__ == '__main__':
     try:
         run_tests()
     except Exception as e:
-        print_test(False)
+        print("Exception on test ", TESTS_NAMES[current_test])
+    
